@@ -1,0 +1,1695 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#a0322d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="圆梦欧洲">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>圆梦欧洲 · 18 天旅行攻略</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #faf6ef;
+      --bg-soft: #fffaf2;
+      --card: rgba(255, 253, 248, 0.94);
+      --card-strong: #fffdf8;
+      --text: #2e2924;
+      --muted: #746b62;
+      --line: rgba(122, 96, 75, 0.18);
+      --primary: #a0322d;
+      --primary-dark: #79241f;
+      --green: #5e7553;
+      --gold: #c9a45c;
+      --blue: #416b86;
+      --shadow: 0 16px 42px rgba(93, 58, 31, 0.13);
+      --radius: 22px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --bg: #171411;
+        --bg-soft: #211c17;
+        --card: rgba(40, 34, 28, 0.94);
+        --card-strong: #2b251f;
+        --text: #f3eadf;
+        --muted: #c6b9aa;
+        --line: rgba(241, 225, 207, 0.16);
+        --primary: #d45f55;
+        --primary-dark: #ef8a80;
+        --green: #9eb58f;
+        --gold: #e0bd72;
+        --blue: #8cb4d0;
+        --shadow: 0 18px 46px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(201, 164, 92, 0.22), transparent 32rem),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.58;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(86px + var(--safe-bottom));
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 18px 16px 34px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      padding: 26px 20px;
+      background:
+        linear-gradient(135deg, rgba(160, 50, 45, 0.95), rgba(121, 36, 31, 0.9)),
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.28), transparent 22rem);
+      color: #fff8ed;
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -96px auto;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0.82;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Noto Serif SC", "Songti SC", Georgia, serif;
+      line-height: 1.18;
+    }
+
+    h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      font-size: clamp(34px, 8vw, 68px);
+      letter-spacing: -0.04em;
+    }
+
+    .hero-subtitle {
+      position: relative;
+      z-index: 1;
+      margin: 12px 0 22px;
+      max-width: 700px;
+      color: rgba(255, 248, 237, 0.86);
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-label {
+      display: block;
+      color: rgba(255, 248, 237, 0.75);
+      font-size: 12px;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+      font-weight: 750;
+    }
+
+    .progress {
+      width: 100%;
+      height: 10px;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .progress span {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ffe0a6, #fff6da);
+      transition: width 0.35s ease;
+    }
+
+    .section {
+      display: none;
+      margin-top: 18px;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    #itineraryList {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 26px 2px 14px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .toolbar,
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn,
+    .mini-btn,
+    .link-card,
+    .nav-btn {
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .btn {
+      min-height: 42px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      box-shadow: 0 8px 24px rgba(93, 58, 31, 0.07);
+    }
+
+    .btn.primary {
+      border-color: transparent;
+      background: var(--primary);
+      color: #fff7ef;
+    }
+
+    .btn.danger {
+      color: var(--primary);
+    }
+
+    .mini-btn {
+      min-height: 32px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .day-card {
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+
+    .day-card.today {
+      border-color: rgba(201, 164, 92, 0.75);
+    }
+
+    .day-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      width: 100%;
+      padding: 18px;
+      border: 0;
+      border-bottom: 1px solid transparent;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+    }
+
+    .day-card.open .day-header {
+      border-bottom-color: var(--line);
+    }
+
+    .day-kicker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: rgba(201, 164, 92, 0.08);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .pill.hot {
+      border-color: rgba(201, 164, 92, 0.48);
+      background: rgba(201, 164, 92, 0.2);
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    .pill.green {
+      background: rgba(94, 117, 83, 0.12);
+      color: var(--green);
+    }
+
+    .day-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 12px;
+      margin-top: 8px;
+    }
+
+    .day-title h3 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .route {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .chevron {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(160, 50, 45, 0.09);
+      color: var(--primary);
+      transition: transform 0.2s ease;
+    }
+
+    .day-card.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .day-body {
+      display: none;
+      padding: 0 18px 18px;
+    }
+
+    .day-card.open .day-body {
+      display: block;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .info-box {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 13px;
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .info-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .transport-list,
+    .tips,
+    .timeline,
+    .checklist,
+    .contact-list,
+    .plain-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .transport-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      border-radius: 14px;
+      padding: 10px 10px 10px 12px;
+      background: rgba(65, 107, 134, 0.11);
+      color: var(--blue);
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 6px;
+    }
+
+    .timeline li {
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .timeline li::before {
+      content: "";
+      position: absolute;
+      top: 0.62em;
+      left: 5px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 4px rgba(201, 164, 92, 0.18);
+    }
+
+    .tips li {
+      border-left: 3px solid var(--blue);
+      border-radius: 12px;
+      padding: 9px 10px;
+      background: rgba(65, 107, 134, 0.1);
+      color: var(--blue);
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 9px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 9px 10px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .check-row input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--primary);
+    }
+
+    .check-row .done {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .ticket-grid,
+    .grid-2,
+    .link-grid,
+    .weather-grid,
+    .pack-grid,
+    .sos-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ticket-grid,
+    .link-grid {
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    }
+
+    .grid-2,
+    .pack-grid,
+    .sos-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tool-card,
+    .link-group,
+    .pack-card,
+    .sos-card {
+      padding: 16px;
+    }
+
+    .tool-card h3,
+    .link-group h3,
+    .pack-card h3,
+    .sos-card h3 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    label.field {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .field input,
+    .calc-field input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 9px 12px;
+      background: var(--card-strong);
+      color: var(--text);
+      outline: none;
+    }
+
+    .field input:focus,
+    .calc-field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(160, 50, 45, 0.12);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .clock-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .clock {
+      border-radius: 18px;
+      padding: 13px;
+      background: rgba(94, 117, 83, 0.12);
+    }
+
+    .clock strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    .calc-result {
+      display: grid;
+      place-items: center;
+      min-height: 96px;
+      margin-top: 12px;
+      border-radius: 18px;
+      background: rgba(201, 164, 92, 0.15);
+      color: var(--primary-dark);
+      text-align: center;
+    }
+
+    .calc-result strong {
+      display: block;
+      font-size: 30px;
+    }
+
+    .link-card {
+      display: block;
+      border-radius: 18px;
+      padding: 13px;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .link-card:hover,
+    .link-card:focus-visible {
+      border-color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .link-card strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 20;
+      padding: 8px 10px calc(8px + var(--safe-bottom));
+      border-top: 1px solid var(--line);
+      background: var(--bg-soft);
+      background: color-mix(in srgb, var(--bg-soft) 88%, transparent);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav-inner {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+      width: min(760px, 100%);
+      margin: 0 auto;
+    }
+
+    .nav-btn {
+      display: grid;
+      place-items: center;
+      min-height: 54px;
+      border-radius: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .nav-btn .icon {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 17px;
+    }
+
+    .nav-btn.active {
+      border-color: rgba(160, 50, 45, 0.42);
+      background: rgba(160, 50, 45, 0.12);
+      color: var(--primary);
+    }
+
+    .phrase-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      background: var(--card);
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--primary);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .empty-note {
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        padding: 12px 12px 24px;
+      }
+
+      .hero {
+        border-radius: 24px;
+        padding: 22px 16px;
+      }
+
+      .hero-grid,
+      .info-grid,
+      .grid-2,
+      .pack-grid,
+      .sos-grid,
+      .clock-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #itineraryList {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        display: grid;
+        align-items: start;
+      }
+
+      .day-header {
+        padding: 16px 14px;
+      }
+
+      .day-body {
+        padding: 0 14px 16px;
+      }
+
+      .transport-item,
+      .check-row {
+        grid-template-columns: auto 1fr;
+      }
+
+      .transport-item .mini-btn,
+      .check-row .mini-btn {
+        grid-column: 2;
+        justify-self: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <p class="eyebrow">Italy · France · Switzerland</p>
+      <h1>圆梦欧洲 · 18 天</h1>
+      <p class="hero-subtitle">把行程、票务、地图、天气、行李和应急信息放在一个离线可用的网页里，出行时用手机直接打开。</p>
+      <div class="hero-grid">
+        <div class="stat">
+          <span class="stat-label">行程状态</span>
+          <span class="stat-value" id="tripState">计算中</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">路线</span>
+          <span class="stat-value">米兰 → 巴黎 → 瑞士 → 米兰</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">打卡进度</span>
+          <span class="stat-value" id="progressText">0 / 18 天</span>
+          <div class="progress" aria-hidden="true"><span id="progressFill"></span></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="tab-trip" class="section active" aria-labelledby="tripTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="tripTitle">每日行程</h2>
+            <p>卡片可展开；景点勾选、本地保存；地图按钮会打开 Google Maps 搜索。</p>
+          </div>
+          <div class="toolbar">
+            <button class="btn" id="expandAll" type="button">全部展开</button>
+            <button class="btn" id="collapseAll" type="button">全部折叠</button>
+            <button class="btn danger" id="resetChecks" type="button">重置打卡</button>
+          </div>
+        </div>
+        <div id="itineraryList"></div>
+      </section>
+
+      <section id="tab-tools" class="section" aria-labelledby="toolsTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="toolsTitle">出行工具</h2>
+            <p>换汇、时区、AA、小费和天气入口，全部在本页完成。</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <article class="card tool-card">
+            <h3>多币种换算</h3>
+            <div class="field-grid">
+              <label class="field">欧元 EUR<input inputmode="decimal" id="eurInput" placeholder="0"></label>
+              <label class="field">瑞郎 CHF<input inputmode="decimal" id="chfInput" placeholder="0"></label>
+              <label class="field">人民币 CNY<input inputmode="decimal" id="cnyInput" placeholder="0"></label>
+            </div>
+            <p class="muted">参考汇率，可按出行当天改成实时汇率。</p>
+            <div class="field-grid">
+              <label class="field">1 EUR = CNY<input inputmode="decimal" id="rateEurCny"></label>
+              <label class="field">1 CHF = CNY<input inputmode="decimal" id="rateChfCny"></label>
+            </div>
+          </article>
+
+          <article class="card tool-card">
+            <h3>双时区时钟</h3>
+            <div class="clock-grid">
+              <div class="clock"><span class="muted">北京</span><strong id="cnClock">--:--</strong></div>
+              <div class="clock"><span class="muted">欧洲中部夏令时</span><strong id="euClock">--:--</strong></div>
+            </div>
+            <p class="muted" id="timeHint">正在判断欧洲当地时段。</p>
+          </article>
+
+          <article class="card tool-card">
+            <h3>AA / 小费计算</h3>
+            <div class="field-grid">
+              <label class="field">账单金额<input inputmode="decimal" id="billInput" value="40"></label>
+              <label class="field">人数<input inputmode="numeric" id="peopleInput" value="2"></label>
+              <label class="field">小费 %<input inputmode="decimal" id="tipInput" value="0"></label>
+            </div>
+            <div class="calc-result">
+              <div>每人约 <strong id="perPerson">€20.00</strong></div>
+            </div>
+            <p class="muted">意大利餐厅账单里常见 coperto（座位费），通常已单独列出。</p>
+          </article>
+
+          <article class="card tool-card">
+            <h3>城市天气</h3>
+            <p class="muted">点击会打开实时天气页面；山区天气变化快，徒步前再确认一次。</p>
+            <div class="weather-grid" id="weatherGrid"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="tab-links" class="section" aria-labelledby="linksTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="linksTitle">常用网址</h2>
+            <p>交通、票务、地图、翻译和天气入口集中在这里。</p>
+          </div>
+        </div>
+        <div id="linksList"></div>
+      </section>
+
+      <section id="tab-pack" class="section" aria-labelledby="packTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="packTitle">行李清单</h2>
+            <p>出发前逐项勾选；状态会保存在本机浏览器。</p>
+          </div>
+          <div class="toolbar">
+            <button class="btn danger" id="resetPack" type="button">重置行李勾选</button>
+          </div>
+        </div>
+        <div class="pack-grid" id="packList"></div>
+      </section>
+
+      <section id="tab-sos" class="section" aria-labelledby="sosTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="sosTitle">应急信息</h2>
+            <p>电话号码可直接拨打；出行前建议再到使领馆官网复核一次。</p>
+          </div>
+        </div>
+        <div class="sos-grid" id="sosList"></div>
+        <div class="section-head">
+          <div>
+            <h2>常用短句</h2>
+            <p>覆盖问路、购票、求助、就医等高频场景。</p>
+          </div>
+        </div>
+        <div class="phrase-wrap" id="phraseTable"></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="主导航">
+    <div class="nav-inner">
+      <button class="nav-btn active" type="button" data-tab="trip"><span class="icon">日</span>行程</button>
+      <button class="nav-btn" type="button" data-tab="tools"><span class="icon">算</span>工具</button>
+      <button class="nav-btn" type="button" data-tab="links"><span class="icon">链</span>网址</button>
+      <button class="nav-btn" type="button" data-tab="pack"><span class="icon">包</span>行李</button>
+      <button class="nav-btn" type="button" data-tab="sos"><span class="icon">急</span>应急</button>
+    </div>
+  </nav>
+
+  <script>
+    const STORAGE_PREFIX = "dd:";
+    const START_DATE = "2026-06-02";
+    const END_DATE = "2026-06-19";
+
+    const ITINERARY = [
+      {
+        day: 1,
+        date: "2026-06-02",
+        title: "米兰落地",
+        route: "MXP T1 → 米兰中央火车站",
+        city: "米兰",
+        transport: ["20:15 抵达 MXP T1", "机场大巴（约 10€）到中央火车站附近"],
+        stay: "Seveso Milan Central Rooms",
+        places: ["MXP T1", "Milano Centrale", "Seveso Milan Central Rooms"],
+        checklist: ["抵达 MXP T1", "买机场大巴票", "到中央火车站附近", "入住 Seveso Milan Central Rooms"],
+        tips: ["飞机上尽量睡觉；没休息好的话落地后可以再倒倒时差。"],
+        tickets: []
+      },
+      {
+        day: 2,
+        date: "2026-06-03",
+        title: "米兰 → 多洛米蒂",
+        route: "Milano Centrale → Verona → Bressanone/Brixen",
+        city: "Bressanone / 富内斯",
+        transport: ["06:25 Milano Centrale → 08:17 Verona Porta Nuova · 无需订座", "09:01 Verona Porta Nuova → 11:02 Bressanone/Brixen · 无法线上订座"],
+        stay: "Vintlerhof",
+        places: ["Bressanone/Brixen", "Vintlerhof", "富内斯山谷 Val di Funes", "孤独教堂 Chiesetta di San Giovanni"],
+        checklist: ["抵达 Bressanone/Brixen", "入住 Vintlerhof", "富内斯山谷", "孤独教堂", "等夕阳日照金山"],
+        tips: ["下午游览富内斯山谷 + 孤独教堂，运气好可以看到夕阳时分的日照金山。"],
+        tickets: []
+      },
+      {
+        day: 3,
+        date: "2026-06-04",
+        title: "多洛米蒂",
+        route: "Brixen → Cristina → Seceda / Ortisei",
+        city: "多洛米蒂",
+        transport: ["Brixen 坐公交到 Cristina 小镇上山", "Seceda 山顶后可从 Ortisei 下山或原路返回"],
+        stay: "Vintlerhof",
+        places: ["Seceda 刀锋山", "Cristina", "Ortisei", "Alpe di Siusi 休斯高原"],
+        checklist: ["从 Brixen 出发去 Cristina", "刀锋山 Seceda 徒步", "决定 Ortisei 下山或原路返回", "休斯高原 Alpe di Siusi"],
+        tips: ["Seceda 缆车单程 49€，往返 74€；休斯高原缆车往返 41€。"],
+        tickets: []
+      },
+      {
+        day: 4,
+        date: "2026-06-05",
+        title: "多洛米蒂",
+        route: "三峰山徒步",
+        city: "Tre Cime",
+        transport: ["前往三峰山的 444 路公交车需要提前购买车票"],
+        stay: "Vintlerhof",
+        places: ["Tre Cime di Lavaredo 三峰山", "魔戒之路"],
+        checklist: ["确认 444 路公交车票", "三峰山环线徒步", "魔戒之路"],
+        tips: ["三峰山天气变化快，出发前再确认班车与封路情况。"],
+        tickets: [{ label: "三峰山 444 路公交", url: "https://www.drei-zinnen.com" }]
+      },
+      {
+        day: 5,
+        date: "2026-06-06",
+        title: "Brixen → 威尼斯",
+        route: "Brixen → Venezia Mestre",
+        city: "威尼斯",
+        transport: ["06:55 Brixen → 10:50 Venezia Mestre"],
+        stay: "",
+        places: ["Venezia Mestre", "赤足桥", "里亚托桥", "沉船书店", "叹息桥", "圣马可广场", "圣马可大教堂", "学院桥", "宪法桥"],
+        checklist: ["抵达 Venezia Mestre", "赤足桥", "里亚托桥", "沉船书店", "叹息桥", "圣马可广场＆教堂", "学院桥看日落", "宪法桥"],
+        tips: ["全程步行 citywalk。", "圣马可教堂需线上预约购票，提前一天通常也能买。"],
+        tickets: [{ label: "圣马可大教堂", url: "https://basilicasanmarco.skiperformance.com/en/store" }]
+      },
+      {
+        day: 6,
+        date: "2026-06-07",
+        title: "威尼斯 → 佛罗伦萨（免费日）",
+        route: "Venezia Mestre → Firenze S.M. Novella",
+        city: "佛罗伦萨",
+        transport: ["07:38 Venezia Mestre → 09:39 Firenze S.M. Novella · 需订座 13€", "提前一小时也有一班"],
+        stay: "",
+        places: ["学院美术馆", "共和广场", "领主广场", "旧宫", "乌菲兹美术馆", "老桥", "碧提宫", "波波里花园", "米开朗基罗广场"],
+        checklist: ["学院美术馆", "共和广场", "领主广场", "旧宫登顶", "乌菲兹美术馆", "老桥", "碧提宫和波波里花园（可选）", "米开朗基罗广场看日落"],
+        tips: ["旧宫登顶票提前线上买。其他博物馆免费日直接入口处排队取票；波波里花园和碧提宫要先去买票窗口领票。"],
+        tickets: [
+          { label: "旧宫 / 佛罗伦萨市政博物馆", url: "https://musefirenze.it/en/musei/museo-di-palazzo-vecchio/" },
+          { label: "乌菲兹美术馆", url: "https://www.uffizi.it/en/tickets" },
+          { label: "学院美术馆", url: "https://www.galleriaaccademiafirenze.it/en/tickets/" }
+        ]
+      },
+      {
+        day: 7,
+        date: "2026-06-08",
+        title: "佛罗伦萨 → 罗马",
+        route: "Firenze Campo di Marte → Roma Termini",
+        city: "罗马",
+        transport: ["10:06 Firenze Campo di Marte → 11:24 Roma Termini"],
+        stay: "",
+        places: ["中央市场", "圣母百花大教堂", "罗马斗兽场", "帕拉丁山", "古罗马广场", "真理之口", "橘园"],
+        checklist: ["中央市场吃牛肚包", "圣母百花大教堂外观", "抵达 Roma Termini", "罗马斗兽场", "帕拉丁山", "古罗马广场", "真理之口", "橘园日落"],
+        tips: ["斗兽场顶层票需要提前一个月抢，必须严格按照买票时间进场。"],
+        tickets: [{ label: "斗兽场官方购票", url: "https://ticketing.colosseo.it/zh/" }]
+      },
+      {
+        day: 8,
+        date: "2026-06-09",
+        title: "罗马",
+        route: "罗马历史中心",
+        city: "罗马",
+        transport: [],
+        stay: "",
+        places: ["西班牙阶梯", "特雷维喷泉", "圣依纳爵堂", "万神殿", "纳沃纳广场", "博尔盖塞公园", "萍丘"],
+        checklist: ["西班牙阶梯", "特雷维喷泉", "圣依纳爵堂", "万神殿", "纳沃纳广场", "博尔盖塞公园", "萍丘日落"],
+        tips: ["西班牙阶梯和特雷维喷泉人很多，早上 7-8 点去最佳。", "万神殿可以线上买，也可以线下排队买票。"],
+        tickets: [{ label: "万神殿官方票务", url: "https://www.museiitaliani.it/en/museums/5f4014a4-8f29-4ba8-8f44-5516a0c99300" }]
+      },
+      {
+        day: 9,
+        date: "2026-06-10",
+        title: "罗马 → 巴黎（飞）",
+        route: "梵蒂冈 → 巴黎",
+        city: "罗马 / 巴黎",
+        transport: ["易捷航空 U24958 19:30 → 21:35"],
+        stay: "",
+        places: ["梵蒂冈博物馆", "圣彼得大教堂", "圣天使堡", "Rome Fiumicino Airport", "Paris Orly Airport"],
+        checklist: ["梵蒂冈博物馆最早入场", "圣彼得大教堂登顶", "圣彼得大教堂内部", "圣天使堡外围", "易捷航空 U24958 飞巴黎"],
+        tips: ["大教堂登顶票现场买；梵蒂冈博物馆提前半年就能买。", "教堂着装不能穿无袖 / 短裙。", "周三上午教堂有公开教皇活动，教堂可能不能参观。"],
+        tickets: [{ label: "梵蒂冈博物馆", url: "https://tickets.museivaticani.va/home" }]
+      },
+      {
+        day: 10,
+        date: "2026-06-11",
+        title: "巴黎",
+        route: "凯旋门 / 奥赛 / 香榭丽舍",
+        city: "巴黎",
+        transport: [],
+        stay: "",
+        places: ["凯旋门", "香榭丽舍大道", "协和广场", "巴黎歌剧院", "奥赛博物馆"],
+        checklist: ["凯旋门外观", "香榭丽舍大道", "协和广场", "巴黎歌剧院", "奥赛博物馆", "21:00 左右上凯旋门看日落和蓝调"],
+        tips: ["奥赛周四开放夜场（21:45 关门）。买 48 小时博物馆通票，从进奥赛开始使用。", "奥赛有通票专门通道 C1，可以不预约。", "凯旋门可看到埃菲尔铁塔日落后整点闪灯。"],
+        tickets: [
+          { label: "巴黎博物馆通票", url: "https://www.parismuseumpass.fr" },
+          { label: "奥赛博物馆", url: "https://www.musee-orsay.fr/en/tickets" },
+          { label: "凯旋门", url: "https://www.paris-arc-de-triomphe.fr/en/visit/prepare-your-visit" }
+        ]
+      },
+      {
+        day: 11,
+        date: "2026-06-12",
+        title: "巴黎",
+        route: "圣礼拜堂 / 卢浮宫 / 塞纳河",
+        city: "巴黎",
+        transport: [],
+        stay: "",
+        places: ["圣礼拜教堂", "巴黎圣母院", "先贤祠", "卢浮宫", "莎士比亚书店", "卢森堡公园", "Vedettes du Pont Neuf"],
+        checklist: ["圣礼拜教堂（9:00 开门）", "巴黎圣母院", "先贤祠", "卢浮宫夜场", "莎士比亚书店 / 卢森堡公园（可选）", "塞纳河游船（新桥码头）"],
+        tips: ["圣礼拜教堂预约 + 排队；巴黎圣母院如上塔楼需预约。", "卢浮宫周五开放夜场（21:00 关门）。大概八九点游览完出来坐塞纳河游船。"],
+        tickets: [
+          { label: "圣礼拜教堂", url: "https://www.sainte-chapelle.fr/en" },
+          { label: "卢浮宫", url: "https://www.ticketlouvre.fr" },
+          { label: "新桥游船", url: "https://www.vedettesdupontneuf.com" }
+        ]
+      },
+      {
+        day: 12,
+        date: "2026-06-13",
+        title: "巴黎",
+        route: "橘园 / 夏乐宫 / 蒙马特",
+        city: "巴黎",
+        transport: [],
+        stay: "",
+        places: ["杜乐丽花园", "橘园美术馆", "海军府", "夏乐宫", "蒙马特高地"],
+        checklist: ["杜乐丽花园", "橘园美术馆", "海军府", "夏乐宫拍铁塔", "蒙马特高地"],
+        tips: ["进夏乐宫是最后一次使用通票，确保不过期。需在下午进入，拍铁塔不逆光。"],
+        tickets: [
+          { label: "橘园美术馆", url: "https://www.musee-orangerie.fr/en" },
+          { label: "海军府", url: "https://www.hotel-de-la-marine.paris/en" }
+        ]
+      },
+      {
+        day: 13,
+        date: "2026-06-14",
+        title: "巴黎 → 采尔玛特",
+        route: "Paris Gare de Lyon → Basel → Zermatt",
+        city: "采尔玛特",
+        transport: ["07:22 Paris Gare de Lyon → 10:26 Basel SBB Train Station", "10:58 Basel SBB Train Station → 14:17 Zermatt"],
+        stay: "",
+        places: ["Paris Gare de Lyon", "Basel SBB", "Zermatt", "Matterhorn", "Kirchbrücke Zermatt"],
+        checklist: ["赶 07:22 巴黎里昂站火车", "Basel SBB 换乘", "抵达 Zermatt", "游览马特洪峰", "蓝调时刻经典机位拍照"],
+        tips: ["瑞士段注意站台换乘时间；采尔玛特禁燃油车，站内外交通以步行 / 电动车为主。"],
+        tickets: [{ label: "SBB 瑞士铁路", url: "https://www.sbb.ch/en" }]
+      },
+      {
+        day: 14,
+        date: "2026-06-15",
+        title: "采尔玛特 → 施皮茨",
+        route: "Zermatt → Spiez",
+        city: "施皮茨 / 布里恩茨 / 龙疆",
+        transport: ["08:37 Zermatt → 10:21 Spiez"],
+        stay: "施皮茨（之后两天）",
+        places: ["Zermatt", "Spiez", "Brienz", "Lungern"],
+        checklist: ["天气好看日照金山", "08:37 离开 Zermatt", "抵达 Spiez", "施皮茨小镇", "布里恩茨", "龙疆"],
+        tips: ["之后两天都住施皮茨；小镇游览按天气和体力调整。"],
+        tickets: [{ label: "SBB 瑞士铁路", url: "https://www.sbb.ch/en" }]
+      },
+      {
+        day: 15,
+        date: "2026-06-16",
+        title: "格林德瓦 + 劳特布伦嫩 + 米伦",
+        route: "Spiez → Interlaken Ost → Grindelwald / Mürren",
+        city: "伯尔尼高地",
+        transport: ["施皮茨到因特拉肯东坐左边，可看图恩湖全景", "米伦回施皮茨：最晚一班从劳特布伦嫩出发 21:31"],
+        stay: "施皮茨",
+        places: ["Interlaken Ost", "Grindelwald", "Männlichen", "Kleine Scheidegg", "Lauterbrunnen", "Grütschalp", "Mürren", "Allmendhubel", "Gimmelwald"],
+        checklist: ["坐左侧看图恩湖", "格林德瓦梦幻山坡", "GB GGM 缆车至 Männlichen", "Männlichen 徒步至 Kleine Scheidegg", "劳特布伦嫩小镇", "Grütschalp → 米伦左侧景观", "Allmendhubel 鲜花谷徒步", "米伦步道至 Gimmelwald（可选）"],
+        tips: ["三条徒步路线都较轻松，基本属于闲逛型；时间不够可放弃米伦步道，从米伦回施皮茨。"],
+        tickets: [{ label: "Jungfrau Region", url: "https://www.jungfrau.ch/en-gb/" }]
+      },
+      {
+        day: 16,
+        date: "2026-06-17",
+        title: "厄希嫩湖徒步",
+        route: "Spiez → Oeschinensee → Luzern",
+        city: "厄希嫩湖 / 卢塞恩",
+        transport: ["Spiez → Luzern"],
+        stay: "Luzern",
+        places: ["Oeschinensee", "Kandersteg", "Luzern"],
+        checklist: ["厄希嫩湖徒步", "从 Spiez 前往 Luzern", "入住卢塞恩"],
+        tips: ["厄希嫩湖徒步前重点看天气、缆车运行和山路开放状态。"],
+        tickets: [{ label: "厄希嫩湖缆车", url: "https://www.oeschinensee.ch/en/" }]
+      },
+      {
+        day: 17,
+        date: "2026-06-18",
+        title: "Stoos 徒步",
+        route: "Luzern → Stoos → Milan",
+        city: "Stoos / 米兰",
+        transport: ["Luzern → Milan"],
+        stay: "米兰",
+        places: ["Stoos", "Fronalpstock", "Klingenstock", "Milan"],
+        checklist: ["Stoos 徒步", "确认返回米兰火车", "抵达米兰"],
+        tips: ["Stoos 山脊徒步看天气决定是否上山，风大或低云时可改卢塞恩市区。"],
+        tickets: [{ label: "Stoos 官方信息", url: "https://stoos-muotatal.ch/en/" }]
+      },
+      {
+        day: 18,
+        date: "2026-06-19",
+        title: "米兰 → 回国",
+        route: "米兰市区 → 机场",
+        city: "米兰",
+        transport: ["22:15 飞机起飞"],
+        stay: "",
+        places: ["米兰大教堂", "埃马努埃莱二世拱廊", "圣母恩宠教堂", "The Last Supper"],
+        checklist: ["米兰大教堂", "埃马努埃莱二世拱廊", "圣母恩宠教堂《最后的晚餐》（如抢到票）", "提前去机场", "22:15 起飞"],
+        tips: ["《最后的晚餐》抢票很难，通常提前三个月放票。"],
+        tickets: [
+          { label: "米兰大教堂", url: "https://www.duomomilano.it/en/buy-tickets/" },
+          { label: "最后的晚餐", url: "https://cenacolovinciano.vivaticket.it/" }
+        ]
+      }
+    ];
+
+    const WEATHER_CITIES = [
+      ["Milan", "米兰"],
+      ["Bressanone", "Brixen / 多洛米蒂"],
+      ["Venice", "威尼斯"],
+      ["Florence", "佛罗伦萨"],
+      ["Rome", "罗马"],
+      ["Paris", "巴黎"],
+      ["Zermatt", "采尔玛特"],
+      ["Spiez", "施皮茨"]
+    ];
+
+    const LINK_GROUPS = [
+      {
+        title: "火车 / 交通",
+        links: [
+          ["Trenitalia", "意大利铁路", "https://www.trenitalia.com/en.html"],
+          ["Italo", "意大利高速铁路备选", "https://www.italotreno.it/en"],
+          ["ÖBB", "奥地利铁路，北意/南蒂罗尔常用", "https://www.oebb.at/en/"],
+          ["SBB", "瑞士铁路", "https://www.sbb.ch/en"],
+          ["SNCF Connect", "法国铁路", "https://www.sncf-connect.com/en-en/"],
+          ["三峰山 444 路", "Tre Cime / drei-zinnen 信息", "https://www.drei-zinnen.com"]
+        ]
+      },
+      {
+        title: "景点票务",
+        links: [
+          ["斗兽场", "罗马斗兽场官方票务", "https://ticketing.colosseo.it/zh/"],
+          ["梵蒂冈博物馆", "梵蒂冈官方预约", "https://tickets.museivaticani.va/home"],
+          ["巴黎博物馆通票", "Paris Museum Pass", "https://www.parismuseumpass.fr"],
+          ["卢浮宫", "Louvre 官方票务", "https://www.ticketlouvre.fr"],
+          ["奥赛博物馆", "Musée d'Orsay", "https://www.musee-orsay.fr/en/tickets"],
+          ["乌菲兹", "Uffizi Galleries", "https://www.uffizi.it/en/tickets"],
+          ["学院美术馆", "大卫像预约", "https://www.galleriaaccademiafirenze.it/en/tickets/"],
+          ["最后的晚餐", "Cenacolo Vinciano", "https://cenacolovinciano.vivaticket.it/"]
+        ]
+      },
+      {
+        title: "地图 / 翻译 / 天气",
+        links: [
+          ["Google Maps", "地图和导航", "https://www.google.com/maps"],
+          ["Apple Maps", "iPhone 原生地图", "https://maps.apple.com/"],
+          ["Citymapper", "城市公共交通", "https://citymapper.com/"],
+          ["Google Translate", "拍照翻译", "https://translate.google.com/"],
+          ["DeepL", "高质量翻译", "https://www.deepl.com/translator"],
+          ["Windy", "风雨云图，徒步前看", "https://www.windy.com/"]
+        ]
+      },
+      {
+        title: "航司 / 其他",
+        links: [
+          ["easyJet", "U24958 航班查询 / 值机", "https://www.easyjet.com/en"],
+          ["MXP Airport", "米兰马尔彭萨机场", "https://www.milanomalpensa-airport.com/en"],
+          ["Paris Aéroport", "巴黎机场", "https://www.parisaeroport.fr/en"],
+          ["12308", "中国领事服务网", "https://cs.mfa.gov.cn/"]
+        ]
+      }
+    ];
+
+    const PACKING = [
+      ["证件", ["护照", "签证 / 入境材料", "机票 / 火车票电子版离线截图", "酒店预订单", "护照复印件", "证件照 2 张", "旅行保险单"]],
+      ["电子", ["手机", "充电宝（≤100Wh）", "欧标转换头", "Type-C / Lightning 线", "相机", "SD 卡", "备用电池", "耳机"]],
+      ["衣物", ["徒步鞋", "轻便鞋", "防风冲锋衣", "长袖", "T 恤", "长裤", "内衣袜", "薄围巾（教堂遮肩）", "太阳镜", "帽子"]],
+      ["洗漱", ["牙刷牙膏（欧洲酒店常不提供）", "洗发沐浴分装", "毛巾", "防晒", "护肤", "剃须 / 卸妆用品"]],
+      ["药品", ["感冒药", "肠胃药", "止泻药", "晕车药", "创可贴", "个人处方药", "驱蚊 / 止痒"]],
+      ["其他", ["VISA / MasterCard 各一张", "少量现金欧元 / 瑞郎", "雨衣", "密封袋", "洗衣袋", "晾衣绳", "轻便水壶"]]
+    ];
+
+    const SOS_GROUPS = [
+      {
+        title: "当地紧急电话",
+        items: [
+          ["欧盟通用紧急号", "112"],
+          ["意大利警察", "113"],
+          ["意大利火警", "115"],
+          ["意大利医疗急救", "118"],
+          ["法国报警", "17"],
+          ["法国医疗急救", "15"],
+          ["法国火警", "18"],
+          ["瑞士报警", "117"],
+          ["瑞士医疗急救", "144"],
+          ["瑞士火警", "118"]
+        ]
+      },
+      {
+        title: "中国领保",
+        items: [
+          ["外交部全球领保热线", "+861012308"],
+          ["驻意大利使馆（罗马）", "+393939110852"],
+          ["驻米兰总领馆", "+393242616666"],
+          ["驻佛罗伦萨总领馆", "+393357748753"],
+          ["驻法国使馆领保", "+33149521950"],
+          ["驻瑞士使馆领保", "+41313527333"]
+        ]
+      },
+      {
+        title: "机场 / 出租",
+        items: [
+          ["米兰 Malpensa", "+390226800627"],
+          ["罗马 Fiumicino", "+390665951"],
+          ["罗马 Taxi", "+39066645"],
+          ["米兰 Taxi", "+39025353"],
+          ["米兰 Taxi 备选", "+39028585"]
+        ]
+      },
+      {
+        title: "丢失证件时",
+        notes: [
+          "先报警并拿报案记录，再联系最近的中国使领馆。",
+          "保留护照首页、签证、机票、酒店订单的离线截图。",
+          "如银行卡遗失，先在银行 App 冻结或拨打发卡行电话。"
+        ]
+      }
+    ];
+
+    const PHRASES = [
+      ["你好 / 谢谢", "Hello / Thank you", "Ciao / Grazie", "Bonjour / Merci", "Hallo / Danke"],
+      ["请问洗手间在哪里？", "Where is the restroom?", "Dov'è il bagno?", "Où sont les toilettes ?", "Wo ist die Toilette?"],
+      ["我要去这个地址。", "I want to go to this address.", "Vorrei andare a questo indirizzo.", "Je voudrais aller à cette adresse.", "Ich möchte zu dieser Adresse."],
+      ["这个多少钱？", "How much is this?", "Quanto costa?", "C'est combien ?", "Wie viel kostet das?"],
+      ["可以刷卡吗？", "Can I pay by card?", "Posso pagare con carta?", "Je peux payer par carte ?", "Kann ich mit Karte zahlen?"],
+      ["请给我一张车票。", "One ticket, please.", "Un biglietto, per favore.", "Un billet, s'il vous plaît.", "Eine Fahrkarte, bitte."],
+      ["这个站台在哪里？", "Where is this platform?", "Dov'è questo binario?", "Où est ce quai ?", "Wo ist dieses Gleis?"],
+      ["我迷路了。", "I am lost.", "Mi sono perso/a.", "Je suis perdu(e).", "Ich habe mich verlaufen."],
+      ["请帮我叫救护车。", "Please call an ambulance.", "Chiami un'ambulanza, per favore.", "Appelez une ambulance, s'il vous plaît.", "Bitte rufen Sie einen Krankenwagen."],
+      ["我需要去医院。", "I need to go to a hospital.", "Devo andare in ospedale.", "Je dois aller à l'hôpital.", "Ich muss ins Krankenhaus."],
+      ["我对这个过敏。", "I am allergic to this.", "Sono allergico/a a questo.", "Je suis allergique à ça.", "Ich bin dagegen allergisch."],
+      ["我不会说当地语言。", "I don't speak the local language.", "Non parlo italiano.", "Je ne parle pas français.", "Ich spreche kein Deutsch."]
+    ];
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    function key(name) {
+      return `${STORAGE_PREFIX}${name}`;
+    }
+
+    function slug(value) {
+      return String(value)
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 48);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function getStored(name, fallback = "") {
+      const value = localStorage.getItem(key(name));
+      return value === null ? fallback : value;
+    }
+
+    function setStored(name, value) {
+      localStorage.setItem(key(name), value);
+    }
+
+    function isChecked(name) {
+      return getStored(name, "0") === "1";
+    }
+
+    function mapUrl(query) {
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+
+    function weatherUrl(city) {
+      return `https://wttr.in/${encodeURIComponent(city)}?lang=zh`;
+    }
+
+    function getTripDayIndex(date = new Date()) {
+      const start = new Date(`${START_DATE}T00:00:00`);
+      const end = new Date(`${END_DATE}T23:59:59`);
+      if (date < start) return 0;
+      if (date > end) return ITINERARY.length + 1;
+      return Math.floor((date - start) / 86400000) + 1;
+    }
+
+    function weekday(dateString) {
+      return new Intl.DateTimeFormat("zh-CN", { weekday: "short" }).format(new Date(`${dateString}T12:00:00`));
+    }
+
+    function formatDate(dateString) {
+      return new Intl.DateTimeFormat("zh-CN", { month: "long", day: "numeric" }).format(new Date(`${dateString}T12:00:00`));
+    }
+
+    function renderItinerary() {
+      const todayIndex = getTripDayIndex();
+      const list = $("#itineraryList");
+      list.innerHTML = ITINERARY.map((day) => {
+        const open = todayIndex === day.day || (todayIndex === 0 && day.day === 1);
+        const todayClass = todayIndex === day.day ? " today" : "";
+        const tickets = day.tickets.length
+          ? `<div class="ticket-grid">${day.tickets.map(ticket => `<a class="link-card" target="_blank" rel="noopener" href="${ticket.url}"><strong>${escapeHtml(ticket.label)}</strong><span class="muted">打开官方/常用预约页面</span></a>`).join("")}</div>`
+          : `<div class="empty-note">今天暂无必须提前打开的票务链接。</div>`;
+        return `
+          <article class="card day-card${todayClass}${open ? " open" : ""}" data-day="${day.day}">
+            <button class="day-header" type="button" aria-expanded="${open}">
+              <div>
+                <div class="day-kicker">
+                  <span class="pill green">D${day.day}</span>
+                  <span>${formatDate(day.date)} · ${weekday(day.date)}</span>
+                  <span class="pill">${escapeHtml(day.city)}</span>
+                  ${day.tickets.length ? '<span class="pill hot">必看票务</span>' : ""}
+                  ${todayIndex === day.day ? '<span class="pill hot">今日</span>' : ""}
+                </div>
+                <div class="day-title">
+                  <h3>${escapeHtml(day.title)}</h3>
+                  <span class="route">${escapeHtml(day.route)}</span>
+                </div>
+              </div>
+              <span class="chevron" aria-hidden="true">⌄</span>
+            </button>
+            <div class="day-body">
+              <div class="info-grid">
+                <div class="info-box">
+                  <div class="info-title">交通</div>
+                  ${day.transport.length ? `<ul class="transport-list">${day.transport.map(item => `<li class="transport-item"><span>${escapeHtml(item)}</span><button class="mini-btn copy-btn" type="button" data-copy="${escapeHtml(item)}">复制</button></li>`).join("")}</ul>` : `<div class="empty-note">今天以步行或市内交通为主。</div>`}
+                </div>
+                <div class="info-box">
+                  <div class="info-title">住宿</div>
+                  ${day.stay ? `<a class="link-card" target="_blank" rel="noopener" href="${mapUrl(day.stay + " " + day.city)}"><strong>${escapeHtml(day.stay)}</strong><span class="muted">打开地图搜索</span></a>` : `<div class="empty-note">原攻略未记录当晚住宿。</div>`}
+                </div>
+              </div>
+
+              <div class="info-grid">
+                <div class="info-box">
+                  <div class="info-title">路线时间线</div>
+                  <ul class="timeline">${day.places.map(place => `<li>${escapeHtml(place)}</li>`).join("")}</ul>
+                </div>
+                <div class="info-box">
+                  <div class="info-title">打卡清单</div>
+                  <ul class="checklist">${day.checklist.map((item, index) => renderCheckRow(`checked:d${day.day}:${index}:${slug(item)}`, item, day.city)).join("")}</ul>
+                </div>
+              </div>
+
+              <div class="info-grid">
+                <div class="info-box">
+                  <div class="info-title">Tips</div>
+                  ${day.tips.length ? `<ul class="tips">${day.tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join("")}</ul>` : `<div class="empty-note">暂无额外提示。</div>`}
+                </div>
+                <div class="info-box">
+                  <div class="info-title">票务链接</div>
+                  ${tickets}
+                </div>
+              </div>
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    function renderCheckRow(storageName, label, city) {
+      const checked = isChecked(storageName);
+      const mapQuery = `${label} ${city}`;
+      return `
+        <li class="check-row">
+          <input type="checkbox" data-check="${escapeHtml(storageName)}" ${checked ? "checked" : ""} aria-label="${escapeHtml(label)}">
+          <span class="${checked ? "done" : ""}">${escapeHtml(label)}</span>
+          <a class="mini-btn" target="_blank" rel="noopener" href="${mapUrl(mapQuery)}">地图</a>
+        </li>`;
+    }
+
+    function renderWeather() {
+      $("#weatherGrid").innerHTML = WEATHER_CITIES.map(([city, label]) => `
+        <a class="link-card" target="_blank" rel="noopener" href="${weatherUrl(city)}">
+          <strong>${escapeHtml(label)}</strong>
+          <span class="muted">${escapeHtml(city)} 实时天气</span>
+        </a>
+      `).join("");
+    }
+
+    function renderLinks() {
+      $("#linksList").innerHTML = LINK_GROUPS.map(group => `
+        <article class="card link-group" style="margin-bottom:12px">
+          <h3>${escapeHtml(group.title)}</h3>
+          <div class="link-grid">
+            ${group.links.map(([title, desc, url]) => `
+              <a class="link-card" target="_blank" rel="noopener" href="${url}">
+                <strong>${escapeHtml(title)}</strong>
+                <span class="muted">${escapeHtml(desc)}</span>
+              </a>
+            `).join("")}
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderPacking() {
+      $("#packList").innerHTML = PACKING.map(([group, items]) => `
+        <article class="card pack-card">
+          <h3>${escapeHtml(group)}</h3>
+          <ul class="checklist">
+            ${items.map((item, index) => renderPackRow(`pack:${slug(group)}:${index}:${slug(item)}`, item)).join("")}
+          </ul>
+        </article>
+      `).join("");
+    }
+
+    function renderPackRow(storageName, label) {
+      const checked = isChecked(storageName);
+      return `
+        <li class="check-row">
+          <input type="checkbox" data-check="${escapeHtml(storageName)}" ${checked ? "checked" : ""} aria-label="${escapeHtml(label)}">
+          <span class="${checked ? "done" : ""}">${escapeHtml(label)}</span>
+        </li>`;
+    }
+
+    function renderSos() {
+      $("#sosList").innerHTML = SOS_GROUPS.map(group => `
+        <article class="card sos-card">
+          <h3>${escapeHtml(group.title)}</h3>
+          ${group.items ? `<ul class="contact-list">${group.items.map(([label, phone]) => `
+            <li><a class="link-card" href="tel:${phone}"><strong>${escapeHtml(label)}</strong><span class="muted">${escapeHtml(phone)}</span></a></li>
+          `).join("")}</ul>` : `<ul class="plain-list">${group.notes.map(note => `<li class="empty-note">${escapeHtml(note)}</li>`).join("")}</ul>`}
+        </article>
+      `).join("");
+
+      $("#phraseTable").innerHTML = `
+        <table>
+          <thead><tr><th>中文</th><th>English</th><th>Italiano</th><th>Français</th><th>Deutsch</th></tr></thead>
+          <tbody>${PHRASES.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("")}</tbody>
+        </table>
+      `;
+    }
+
+    function updateTripStatus() {
+      const now = new Date();
+      const start = new Date(`${START_DATE}T00:00:00`);
+      const end = new Date(`${END_DATE}T23:59:59`);
+      const state = $("#tripState");
+      const tripIndex = getTripDayIndex(now);
+      if (now < start) {
+        const days = Math.ceil((start - now) / 86400000);
+        state.textContent = `距出发 ${days} 天`;
+      } else if (now > end) {
+        state.textContent = "旅程已完成";
+      } else {
+        const day = ITINERARY[Math.max(0, Math.min(ITINERARY.length - 1, tripIndex - 1))];
+        state.textContent = `行程中 · D${tripIndex} ${day.city}`;
+      }
+    }
+
+    function updateProgress() {
+      let completedDays = 0;
+      ITINERARY.forEach(day => {
+        const done = day.checklist.every((item, index) => isChecked(`checked:d${day.day}:${index}:${slug(item)}`));
+        if (done) completedDays += 1;
+      });
+      $("#progressText").textContent = `${completedDays} / ${ITINERARY.length} 天`;
+      $("#progressFill").style.width = `${Math.round((completedDays / ITINERARY.length) * 100)}%`;
+    }
+
+    function wireTabs() {
+      $$(".nav-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const tab = btn.dataset.tab;
+          $$(".nav-btn").forEach(item => item.classList.toggle("active", item === btn));
+          $$(".section").forEach(section => section.classList.toggle("active", section.id === `tab-${tab}`));
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+    }
+
+    function wireItinerary() {
+      $("#itineraryList").addEventListener("click", async (event) => {
+        const header = event.target.closest(".day-header");
+        if (header) {
+          const card = header.closest(".day-card");
+          const open = !card.classList.contains("open");
+          card.classList.toggle("open", open);
+          header.setAttribute("aria-expanded", String(open));
+          return;
+        }
+
+        const copy = event.target.closest(".copy-btn");
+        if (copy) {
+          const text = copy.dataset.copy || "";
+          try {
+            await navigator.clipboard.writeText(text);
+            copy.textContent = "已复制";
+            setTimeout(() => (copy.textContent = "复制"), 1200);
+          } catch {
+            copy.textContent = "复制失败";
+            setTimeout(() => (copy.textContent = "复制"), 1200);
+          }
+        }
+      });
+
+      $("#expandAll").addEventListener("click", () => {
+        $$(".day-card").forEach(card => {
+          card.classList.add("open");
+          $(".day-header", card).setAttribute("aria-expanded", "true");
+        });
+      });
+
+      $("#collapseAll").addEventListener("click", () => {
+        $$(".day-card").forEach(card => {
+          card.classList.remove("open");
+          $(".day-header", card).setAttribute("aria-expanded", "false");
+        });
+      });
+
+      $("#resetChecks").addEventListener("click", () => {
+        if (!confirm("确认重置所有每日打卡？")) return;
+        Object.keys(localStorage).forEach(storageKey => {
+          if (storageKey.startsWith(key("checked:"))) localStorage.removeItem(storageKey);
+        });
+        renderItinerary();
+        updateProgress();
+      });
+    }
+
+    function wireChecks() {
+      document.body.addEventListener("change", (event) => {
+        const input = event.target.closest("input[data-check]");
+        if (!input) return;
+        setStored(input.dataset.check, input.checked ? "1" : "0");
+        const row = input.closest(".check-row");
+        const label = row && row.querySelector("span");
+        if (label) label.classList.toggle("done", input.checked);
+        updateProgress();
+      });
+    }
+
+    function wireCurrency() {
+      const eur = $("#eurInput");
+      const chf = $("#chfInput");
+      const cny = $("#cnyInput");
+      const rateEur = $("#rateEurCny");
+      const rateChf = $("#rateChfCny");
+      let updating = false;
+
+      rateEur.value = getStored("rate:eurCny", "7.80");
+      rateChf.value = getStored("rate:chfCny", "8.40");
+
+      function n(input, fallback = 0) {
+        const value = Number.parseFloat(String(input.value).replace(",", "."));
+        return Number.isFinite(value) ? value : fallback;
+      }
+
+      function fmt(value) {
+        if (!Number.isFinite(value)) return "";
+        return String(Math.round(value * 100) / 100);
+      }
+
+      function convert(source) {
+        if (updating) return;
+        updating = true;
+        const eurRate = n(rateEur, 7.8);
+        const chfRate = n(rateChf, 8.4);
+        setStored("rate:eurCny", String(eurRate));
+        setStored("rate:chfCny", String(chfRate));
+
+        if (source === eur) {
+          const cnyValue = n(eur) * eurRate;
+          cny.value = fmt(cnyValue);
+          chf.value = fmt(cnyValue / chfRate);
+        } else if (source === chf) {
+          const cnyValue = n(chf) * chfRate;
+          cny.value = fmt(cnyValue);
+          eur.value = fmt(cnyValue / eurRate);
+        } else {
+          const cnyValue = n(cny);
+          eur.value = fmt(cnyValue / eurRate);
+          chf.value = fmt(cnyValue / chfRate);
+        }
+        updating = false;
+      }
+
+      [eur, chf, cny].forEach(input => input.addEventListener("input", () => convert(input)));
+      [rateEur, rateChf].forEach(input => input.addEventListener("input", () => convert(cny.value ? cny : eur)));
+    }
+
+    function wireClocks() {
+      const timeFormat = (zone) => new Intl.DateTimeFormat("zh-CN", {
+        timeZone: zone,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      });
+
+      function europeHour() {
+        const parts = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Europe/Rome",
+          hour: "2-digit",
+          hour12: false
+        }).formatToParts(new Date());
+        return Number(parts.find(part => part.type === "hour").value);
+      }
+
+      function tick() {
+        $("#cnClock").textContent = timeFormat("Asia/Shanghai").format(new Date());
+        $("#euClock").textContent = timeFormat("Europe/Rome").format(new Date());
+        const hour = europeHour();
+        const hint = hour < 6 ? "欧洲现在是深夜，适合查票但不适合打电话。"
+          : hour < 11 ? "欧洲现在是上午，适合赶早场景点。"
+          : hour < 17 ? "欧洲现在是下午，注意热门景点排队和山区天气。"
+          : hour < 22 ? "欧洲现在是傍晚到夜间，适合日落点和返程交通确认。"
+          : "欧洲现在已入夜，确认末班车和回住宿路线。";
+        $("#timeHint").textContent = hint;
+      }
+
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    function wireCalculator() {
+      const bill = $("#billInput");
+      const people = $("#peopleInput");
+      const tip = $("#tipInput");
+      const output = $("#perPerson");
+
+      function calc() {
+        const amount = Math.max(0, Number.parseFloat(bill.value) || 0);
+        const count = Math.max(1, Number.parseInt(people.value, 10) || 1);
+        const tipRate = Math.max(0, Number.parseFloat(tip.value) || 0) / 100;
+        output.textContent = `€${((amount * (1 + tipRate)) / count).toFixed(2)}`;
+      }
+
+      [bill, people, tip].forEach(input => input.addEventListener("input", calc));
+      calc();
+    }
+
+    function wirePacking() {
+      $("#resetPack").addEventListener("click", () => {
+        if (!confirm("确认重置所有行李清单勾选？")) return;
+        Object.keys(localStorage).forEach(storageKey => {
+          if (storageKey.startsWith(key("pack:"))) localStorage.removeItem(storageKey);
+        });
+        renderPacking();
+        updateProgress();
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderItinerary();
+      renderWeather();
+      renderLinks();
+      renderPacking();
+      renderSos();
+      updateTripStatus();
+      updateProgress();
+      wireTabs();
+      wireItinerary();
+      wireChecks();
+      wireCurrency();
+      wireClocks();
+      wireCalculator();
+      wirePacking();
+    });
+  </script>
+</body>
+</html>

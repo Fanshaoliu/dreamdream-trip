@@ -1,882 +1,866 @@
 <!doctype html>
-<html lang="zh-CN" class="dark">
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="description" content="意大利、法国、瑞士旅行助手：欧洲路线地图、每日行程、汇率、时钟、应急信息与常用链接。" />
-  <title>意法瑞旅行助手</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#a0322d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="圆梦欧洲">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>圆梦欧洲 · 18 天旅行攻略</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
-      color-scheme: dark;
+      color-scheme: light;
+      --bg: #faf6ef;
+      --bg-soft: #fffaf2;
+      --card: rgba(255, 253, 248, 0.94);
+      --card-strong: #fffdf8;
+      --text: #2e2924;
+      --muted: #746b62;
+      --line: rgba(122, 96, 75, 0.18);
+      --primary: #a0322d;
+      --primary-dark: #79241f;
+      --green: #5e7553;
+      --gold: #c9a45c;
+      --blue: #416b86;
+      --shadow: 0 16px 42px rgba(93, 58, 31, 0.13);
+      --radius: 22px;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
-    * { -webkit-tap-highlight-color: transparent; }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --bg: #171411;
+        --bg-soft: #211c17;
+        --card: rgba(40, 34, 28, 0.94);
+        --card-strong: #2b251f;
+        --text: #f3eadf;
+        --muted: #c6b9aa;
+        --line: rgba(241, 225, 207, 0.16);
+        --primary: #d45f55;
+        --primary-dark: #ef8a80;
+        --green: #9eb58f;
+        --gold: #e0bd72;
+        --blue: #8cb4d0;
+        --shadow: 0 18px 46px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
+
     body {
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at top left, rgba(249, 115, 22, 0.22), transparent 30rem),
-        radial-gradient(circle at top right, rgba(37, 99, 235, 0.18), transparent 28rem),
-        linear-gradient(135deg, #020617 0%, #111827 46%, #0f172a 100%);
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        radial-gradient(circle at top left, rgba(201, 164, 92, 0.22), transparent 32rem),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.58;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(86px + var(--safe-bottom));
     }
-    body.light {
-      color-scheme: light;
-      background:
-        radial-gradient(circle at top left, rgba(251, 146, 60, 0.2), transparent 30rem),
-        radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 28rem),
-        linear-gradient(135deg, #fff7ed 0%, #eff6ff 55%, #f8fafc 100%);
+
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .app { width: min(1120px, 100%); margin: 0 auto; padding: 18px 16px 34px; }
+
+    h1, h2, h3 {
+      font-family: "Noto Serif SC", "Songti SC", Georgia, serif;
+      line-height: 1.18;
     }
-    .glass {
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(15, 23, 42, 0.72);
-      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.24);
-      backdrop-filter: blur(18px);
+
+    /* Hero */
+    .hero {
+      position: relative; overflow: hidden;
+      border: 1px solid var(--line); border-radius: 30px;
+      padding: 26px 20px;
+      background: linear-gradient(135deg, rgba(160, 50, 45, 0.95), rgba(121, 36, 31, 0.9)),
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.28), transparent 22rem);
+      color: #fff8ed; box-shadow: var(--shadow);
     }
-    body.light .glass {
-      border-color: rgba(15, 23, 42, 0.1);
-      background: rgba(255, 255, 255, 0.78);
-      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.12);
+    .hero::after {
+      content: ""; position: absolute; inset: auto -40px -96px auto;
+      width: 210px; height: 210px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
     }
-    .bottom-safe { padding-bottom: calc(5.75rem + var(--safe-bottom)); }
-    .tab-safe { padding-bottom: calc(0.7rem + var(--safe-bottom)); }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { scrollbar-width: none; }
-    #trip-map {
-      height: 360px;
-      border-radius: 1.5rem;
-      overflow: hidden;
-      background: #0f172a;
+    .eyebrow { margin: 0 0 10px; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.82; }
+    h1 { position: relative; z-index: 1; margin: 0; font-size: clamp(34px, 8vw, 68px); letter-spacing: -0.04em; }
+    .hero-subtitle { position: relative; z-index: 1; margin: 12px 0 22px; max-width: 700px; color: rgba(255, 248, 237, 0.86); }
+    .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .stat { border: 1px solid rgba(255, 255, 255, 0.24); border-radius: 18px; padding: 14px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); }
+    .stat-label { display: block; color: rgba(255, 248, 237, 0.75); font-size: 12px; }
+    .stat-value { display: block; margin-top: 4px; font-size: 18px; font-weight: 750; }
+    .progress { width: 100%; height: 10px; margin-top: 10px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, 0.18); }
+    .progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ffe0a6, #fff6da); transition: width 0.35s ease; }
+
+    /* Sections & Tabs */
+    .section { display: none; margin-top: 18px; }
+    .section.active { display: block; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 14px; margin: 26px 2px 14px; }
+    .section-head h2 { margin: 0; font-size: 28px; }
+    .section-head p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+    .toolbar, .button-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+    /* Buttons */
+    .btn, .mini-btn, .link-card, .nav-btn { border: 1px solid var(--line); background: var(--card); color: var(--text); }
+    .btn { min-height: 42px; padding: 9px 14px; border-radius: 999px; box-shadow: 0 8px 24px rgba(93, 58, 31, 0.07); }
+    .btn.primary { border-color: transparent; background: var(--primary); color: #fff7ef; }
+    .btn.danger { color: var(--primary); }
+    .mini-btn { min-height: 32px; padding: 5px 10px; border-radius: 999px; color: var(--muted); font-size: 12px; }
+
+    /* Cards */
+    .card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow); }
+    .day-card { overflow: hidden; }
+    .day-card.today { border-color: rgba(201, 164, 92, 0.75); }
+
+    .day-header {
+      display: grid; grid-template-columns: 1fr auto; gap: 12px;
+      width: 100%; padding: 18px; border: 0; border-bottom: 1px solid transparent;
+      background: transparent; color: inherit; text-align: left;
     }
-    @media (min-width: 768px) {
-      #trip-map { height: 470px; }
+    .day-card.open .day-header { border-bottom-color: var(--line); }
+    .day-kicker { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 13px; }
+
+    .pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px; background: rgba(201, 164, 92, 0.08); color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .pill.hot { border-color: rgba(201, 164, 92, 0.48); background: rgba(201, 164, 92, 0.2); color: var(--primary-dark); font-weight: 700; }
+    .pill.green { background: rgba(94, 117, 83, 0.12); color: var(--green); }
+
+    .day-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; margin-top: 8px; }
+    .day-title h3 { margin: 0; font-size: 22px; }
+    .route { color: var(--muted); font-size: 14px; }
+
+    .chevron { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: rgba(160, 50, 45, 0.09); color: var(--primary); transition: transform 0.2s ease; }
+    .day-card.open .chevron { transform: rotate(180deg); }
+
+    .day-body { display: none; padding: 0 18px 18px; }
+    .day-card.open .day-body { display: block; }
+
+    .info-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin: 16px 0; }
+    .info-box { border: 1px solid var(--line); border-radius: 18px; padding: 13px; background: rgba(255, 255, 255, 0.28); }
+    @media (prefers-color-scheme: dark) { .info-box { background: rgba(255, 255, 255, 0.04); } }
+    .info-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: var(--muted); font-size: 12px; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .transport-list, .tips, .timeline, .checklist, .contact-list, .plain-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .transport-item { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; border-radius: 14px; padding: 10px 10px 10px 12px; background: rgba(65, 107, 134, 0.11); color: var(--blue); }
+    .timeline { position: relative; margin-top: 6px; }
+    .timeline li { position: relative; padding-left: 24px; }
+    .timeline li::before { content: ""; position: absolute; top: 0.62em; left: 5px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(201, 164, 92, 0.18); }
+    .tips li { border-left: 3px solid var(--blue); border-radius: 12px; padding: 9px 10px; background: rgba(65, 107, 134, 0.1); color: var(--blue); }
+
+    .check-row { display: grid; grid-template-columns: auto 1fr auto; gap: 9px; align-items: center; border: 1px solid var(--line); border-radius: 15px; padding: 9px 10px; background: rgba(255, 255, 255, 0.2); }
+    @media (prefers-color-scheme: dark) { .check-row { background: rgba(255, 255, 255, 0.04); } }
+    .check-row input { width: 20px; height: 20px; accent-color: var(--primary); }
+    .check-row .done { color: var(--muted); text-decoration: line-through; }
+
+    .ticket-grid, .grid-2, .link-grid, .weather-grid, .pack-grid, .sos-grid { display: grid; gap: 12px; }
+    .ticket-grid, .link-grid { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+    .grid-2, .pack-grid, .sos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .tool-card, .link-group, .pack-card, .sos-card { padding: 16px; }
+    .tool-card h3, .link-group h3, .pack-card h3, .sos-card h3 { margin: 0 0 12px; font-size: 20px; }
+
+    .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    label.field { display: grid; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .field input, .calc-field input { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 14px; padding: 9px 12px; background: var(--card-strong); color: var(--text); outline: none; }
+    .field input:focus, .calc-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(160, 50, 45, 0.12); }
+
+    .muted { color: var(--muted); font-size: 13px; }
+    .clock-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .clock { border-radius: 18px; padding: 13px; background: rgba(94, 117, 83, 0.12); }
+    .clock strong { display: block; margin-top: 4px; font-size: 24px; letter-spacing: -0.03em; }
+    .calc-result { display: grid; place-items: center; min-height: 96px; margin-top: 12px; border-radius: 18px; background: rgba(201, 164, 92, 0.15); color: var(--primary-dark); text-align: center; }
+    .calc-result strong { display: block; font-size: 30px; }
+
+    .link-card { display: block; border-radius: 18px; padding: 13px; transition: transform 0.15s ease, border-color 0.15s ease; }
+    .link-card:hover, .link-card:focus-visible { border-color: var(--gold); transform: translateY(-1px); }
+    .link-card strong { display: block; margin-bottom: 4px; }
+
+    .empty-note { border: 1px dashed var(--line); border-radius: 16px; padding: 12px; color: var(--muted); }
+
+    /* Bottom Nav */
+    .bottom-nav { position: fixed; right: 0; bottom: 0; left: 0; z-index: 20; padding: 8px 10px calc(8px + var(--safe-bottom)); border-top: 1px solid var(--line); background: color-mix(in srgb, var(--bg-soft) 88%, transparent); backdrop-filter: blur(18px); }
+    .nav-inner { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 5px; width: min(760px, 100%); margin: 0 auto; }
+    .nav-btn { display: grid; place-items: center; min-height: 54px; border-radius: 18px; color: var(--muted); font-size: 11px; font-weight: 750; }
+    .nav-btn .icon { display: block; margin-bottom: 2px; font-size: 17px; }
+    .nav-btn.active { border-color: rgba(160, 50, 45, 0.42); background: rgba(160, 50, 45, 0.12); color: var(--primary); }
+
+    /* Map */
+    .map-wrap { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 14px; }
+    #trip-map { height: 340px; background: var(--bg-soft); }
+    @media (min-width: 768px) { #trip-map { height: 440px; } }
+    .leaflet-container { font-family: inherit; }
+    .map-marker {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      font-size: 11px; font-weight: 900; color: #fff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.9);
+      transition: transform 0.2s ease;
     }
-    .leaflet-container {
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0f172a;
+    .map-marker:hover { transform: scale(1.2); }
+    .map-marker.it { background: var(--primary); }
+    .map-marker.fr { background: var(--blue); }
+    .map-marker.ch { background: var(--green); }
+    .map-marker.active { transform: scale(1.25); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), 0 0 0 4px var(--gold); }
+
+    .leaflet-popup-content-wrapper { border-radius: 16px; background: var(--card-strong); color: var(--text); box-shadow: var(--shadow); border: 1px solid var(--line); }
+    .leaflet-popup-tip { background: var(--card-strong); }
+    .leaflet-popup-content { margin: 12px 14px; font-size: 14px; line-height: 1.5; }
+    .leaflet-popup-content strong { font-size: 16px; color: var(--primary); }
+
+    .map-day-btns { display: flex; gap: 6px; overflow-x: auto; padding: 12px 14px; border-top: 1px solid var(--line); background: var(--card); }
+    .map-day-btns::-webkit-scrollbar { display: none; }
+    .map-day-btn { min-height: 36px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--card-strong); color: var(--muted); font-size: 12px; font-weight: 750; white-space: nowrap; flex-shrink: 0; }
+    .map-day-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    /* Phrase table */
+    .phrase-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 18px; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; background: var(--card); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--primary); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* Itinerary grid */
+    #itineraryList { display: grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap: 14px; align-items: start; }
+
+    @media (max-width: 760px) {
+      .app { padding: 12px 12px 24px; }
+      .hero { border-radius: 24px; padding: 22px 16px; }
+      .hero-grid, .info-grid, .grid-2, .pack-grid, .sos-grid, .clock-grid { grid-template-columns: 1fr; }
+      #itineraryList { grid-template-columns: 1fr; }
+      .section-head { display: grid; align-items: start; }
+      .day-header { padding: 16px 14px; }
+      .day-body { padding: 0 14px 16px; }
+      .transport-item, .check-row { grid-template-columns: auto 1fr; }
+      .transport-item .mini-btn, .check-row .mini-btn { grid-column: 2; justify-self: start; }
+      .nav-inner { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; }
+      .nav-btn { font-size: 10px; min-height: 48px; }
     }
-    .leaflet-control-attribution { font-size: 10px; }
-    .day-marker {
-      display: grid;
-      place-items: center;
-      width: 34px;
-      height: 34px;
-      border: 2px solid rgba(255,255,255,0.9);
-      border-radius: 999px;
-      color: #0f172a;
-      font-size: 12px;
-      font-weight: 900;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.35);
-    }
-    .day-marker.it { background: #fb923c; }
-    .day-marker.fr { background: #60a5fa; }
-    .day-marker.ch { background: #67e8f9; }
-    .day-marker.today { transform: scale(1.16); outline: 4px solid rgba(251, 191, 36, 0.35); }
-    .leaflet-popup-content-wrapper {
-      border-radius: 18px;
-      background: rgba(15,23,42,0.94);
-      color: white;
-      box-shadow: 0 18px 45px rgba(15,23,42,0.35);
-    }
-    .leaflet-popup-tip { background: rgba(15,23,42,0.94); }
   </style>
 </head>
-<body class="text-slate-100 antialiased">
-  <div id="root"></div>
+<body>
+  <div class="app">
+    <header class="hero">
+      <p class="eyebrow">Italy · France · Switzerland</p>
+      <h1>圆梦欧洲 · 18 天</h1>
+      <p class="hero-subtitle">把行程地图、票务、天气、行李和应急信息放在一个离线可用的网页里，出行时用手机直接打开。</p>
+      <div class="hero-grid">
+        <div class="stat">
+          <span class="stat-label">行程状态</span>
+          <span class="stat-value" id="tripState">计算中</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">路线</span>
+          <span class="stat-value">米兰 → 巴黎 → 瑞士 → 米兰</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">打卡进度</span>
+          <span class="stat-value" id="progressText">0 / 18 天</span>
+          <div class="progress" aria-hidden="true"><span id="progressFill"></span></div>
+        </div>
+      </div>
+    </header>
 
-  <script type="text/babel">
-    const { useEffect, useMemo, useRef, useState } = React;
-
-    const countryTheme = {
-      IT: { label: "意大利", text: "text-orange-200", bg: "from-orange-500/25 to-red-500/10", badge: "bg-orange-500/20 text-orange-100 border-orange-300/20", dot: "#fb923c" },
-      FR: { label: "法国", text: "text-blue-200", bg: "from-blue-500/25 to-indigo-500/10", badge: "bg-blue-500/20 text-blue-100 border-blue-300/20", dot: "#60a5fa" },
-      CH: { label: "瑞士", text: "text-cyan-200", bg: "from-cyan-400/25 to-sky-500/10", badge: "bg-cyan-500/20 text-cyan-100 border-cyan-300/20", dot: "#67e8f9" }
-    };
-
-    const cities = [
-      { id: "milan", name: "米兰", country: "IT", lat: 45.4642, lng: 9.19, day: 1 },
-      { id: "verona", name: "维罗纳", country: "IT", lat: 45.4384, lng: 10.9916, day: 2 },
-      { id: "brixen", name: "Brixen / 多洛米蒂", country: "IT", lat: 46.7164, lng: 11.6573, day: 2 },
-      { id: "venice", name: "威尼斯", country: "IT", lat: 45.4408, lng: 12.3155, day: 5 },
-      { id: "florence", name: "佛罗伦萨", country: "IT", lat: 43.7696, lng: 11.2558, day: 6 },
-      { id: "rome", name: "罗马 / 梵蒂冈", country: "IT", lat: 41.9028, lng: 12.4964, day: 7 },
-      { id: "paris", name: "巴黎", country: "FR", lat: 48.8566, lng: 2.3522, day: 10 },
-      { id: "basel", name: "巴塞尔", country: "CH", lat: 47.5596, lng: 7.5886, day: 13 },
-      { id: "zermatt", name: "采尔玛特", country: "CH", lat: 46.0207, lng: 7.7491, day: 13 },
-      { id: "spiez", name: "施皮茨 / 伯尔尼高地", country: "CH", lat: 46.688, lng: 7.679, day: 14 },
-      { id: "lucerne", name: "卢塞恩", country: "CH", lat: 47.0502, lng: 8.3093, day: 16 }
-    ];
-
-    const itinerary = [
-      {
-        day: 1, date: "2026-06-02", title: "米兰落地", country: "IT", city: "米兰", coord: [45.4642, 9.19],
-        summary: "抵达 MXP T1，机场大巴到中央火车站附近。",
-        transport: ["20:15 抵达 MXP T1", "机场大巴约 10€ 到 Milano Centrale 附近"],
-        stay: "Seveso Milan Central Rooms",
-        spots: ["米兰中央火车站"],
-        tips: ["飞机上尽量睡，落地后如果状态不好可以继续倒时差。"]
-      },
-      {
-        day: 2, date: "2026-06-03", title: "米兰 → 多洛米蒂", country: "IT", city: "Brixen", coord: [46.7164, 11.6573],
-        summary: "火车转 Verona 到 Brixen，下午富内斯山谷看孤独教堂。",
-        transport: ["06:25 Milano Centrale → 08:17 Verona Porta Nuova，无需订座", "09:01 Verona Porta Nuova → 11:02 Bressanone/Brixen，无法线上订座"],
-        stay: "Vintlerhof",
-        spots: ["富内斯山谷", "圣约翰小教堂", "Santa Maddalena"],
-        tips: ["运气好能看到夕阳时分的日照金山。"]
-      },
-      {
-        day: 3, date: "2026-06-04", title: "刀锋山与休斯高原", country: "IT", city: "多洛米蒂", coord: [46.597, 11.724],
-        summary: "Seceda 刀锋山徒步，可选择 Ortisei 下山或原路返回。",
-        transport: ["Brixen 公交到 Cristina / Val Gardena 一带上山", "Seceda 缆车单程约 49€，往返约 74€", "休斯高原缆车往返约 41€"],
-        stay: "Vintlerhof",
-        spots: ["Seceda 刀锋山", "Ortisei", "Alpe di Siusi 休斯高原"],
-        tips: ["山上天气变化快，准备防风外套和离线地图。"]
-      },
-      {
-        day: 4, date: "2026-06-05", title: "三峰山徒步", country: "IT", city: "多洛米蒂", coord: [46.6187, 12.3028],
-        summary: "Tre Cime 环线 + 魔戒之路。",
-        transport: ["444 路公交前往三峰山，需提前买票"],
-        stay: "Vintlerhof",
-        spots: ["Tre Cime di Lavaredo", "Drei Zinnen", "魔戒之路"],
-        tips: ["444 路车票提前在 drei-zinnen.com 购买，旺季尽早确认班次。"]
-      },
-      {
-        day: 5, date: "2026-06-06", title: "Brixen → 威尼斯", country: "IT", city: "威尼斯", coord: [45.4408, 12.3155],
-        summary: "上午抵达 Venezia Mestre，下午全程步行 citywalk。",
-        transport: ["06:55 Brixen → 10:50 Venezia Mestre"],
-        stay: "",
-        spots: ["赤足桥", "里亚托桥", "沉船书店", "叹息桥", "圣马可广场", "圣马可教堂", "学院桥", "宪法桥"],
-        tips: ["圣马可教堂建议线上预约购票，提前一天通常也能买。", "学院桥适合看日落。"]
-      },
-      {
-        day: 6, date: "2026-06-07", title: "威尼斯 → 佛罗伦萨", country: "IT", city: "佛罗伦萨", coord: [43.7696, 11.2558],
-        summary: "免费日串联学院美术馆、旧宫、乌菲兹与米开朗基罗广场。",
-        transport: ["07:38 Venezia Mestre → 09:39 Firenze S.M. Novella，需订座 13€", "提前一小时也有一班车可选"],
-        stay: "",
-        spots: ["学院美术馆", "共和广场", "领主广场", "旧宫", "乌菲兹美术馆", "老桥", "碧提宫", "波波里花园", "米开朗基罗广场"],
-        tips: ["旧宫登顶票提前线上买。", "其他博物馆免费日可入口处排队取票，碧提宫和波波里花园需先到窗口领票。"]
-      },
-      {
-        day: 7, date: "2026-06-08", title: "佛罗伦萨 → 罗马", country: "IT", city: "罗马", coord: [41.9028, 12.4964],
-        summary: "上午佛罗伦萨经典外观，午后罗马古迹线。",
-        transport: ["10:06 Firenze Campo di Marte → 11:24 Roma Termini"],
-        stay: "",
-        spots: ["中央市场", "圣母百花大教堂", "罗马斗兽场", "帕拉丁山", "古罗马广场", "真理之口", "橘园"],
-        tips: ["斗兽场顶层票需提前一个月抢，严格按预约时间进场。"]
-      },
-      {
-        day: 8, date: "2026-06-09", title: "罗马喷泉与广场线", country: "IT", city: "罗马", coord: [41.9028, 12.4964],
-        summary: "西班牙阶梯、特雷维喷泉、万神殿、纳沃纳广场到萍丘日落。",
-        transport: ["市内步行 + 公交/地铁补足"],
-        stay: "",
-        spots: ["西班牙阶梯", "特雷维喷泉", "圣依纳爵堂", "万神殿", "纳沃纳广场", "博尔盖塞公园", "萍丘露台"],
-        tips: ["西班牙阶梯和特雷维喷泉 7-8 点人最少。", "万神殿可线上买票，也可线下排队。"]
-      },
-      {
-        day: 9, date: "2026-06-10", title: "梵蒂冈 → 巴黎", country: "IT", city: "罗马 / 巴黎", coord: [41.9028, 12.4964],
-        summary: "早入梵蒂冈，晚间易捷航空飞巴黎。",
-        transport: ["易捷航空 U24958 19:30 → 21:35"],
-        stay: "",
-        spots: ["梵蒂冈博物馆", "圣彼得大教堂", "圣彼得大教堂穹顶", "圣天使堡"],
-        tips: ["梵蒂冈预约最早入场。", "圣彼得大教堂先登顶再进内部。", "周三上午教皇公开活动时教堂可能不能参观。", "着装不能无袖或短裙。"]
-      },
-      {
-        day: 10, date: "2026-06-11", title: "巴黎右岸与奥赛夜场", country: "FR", city: "巴黎", coord: [48.8566, 2.3522],
-        summary: "巴黎博物馆通票从奥赛开始使用，晚上凯旋门看夜景。",
-        transport: ["市内地铁 + 步行"],
-        stay: "",
-        spots: ["凯旋门", "香榭丽舍大道", "协和广场", "巴黎歌剧院", "奥赛博物馆"],
-        tips: ["奥赛周四夜场 21:45 关门，通票走 C1 通道。", "21:00 左右上凯旋门等日落和蓝调，日落后整点看铁塔闪灯。"]
-      },
-      {
-        day: 11, date: "2026-06-12", title: "圣礼拜堂、卢浮宫夜场", country: "FR", city: "巴黎", coord: [48.8566, 2.3522],
-        summary: "巴黎核心博物馆日，晚上可接塞纳河游船。",
-        transport: ["市内地铁 + 步行", "塞纳河游船：Vedettes du Pont Neuf 新桥码头"],
-        stay: "",
-        spots: ["圣礼拜教堂", "巴黎圣母院", "先贤祠", "卢浮宫", "莎士比亚书店", "卢森堡公园", "塞纳河游船"],
-        tips: ["圣礼拜堂 9:00 开门，需预约并排队。", "卢浮宫周五夜场 21:00 关门。"]
-      },
-      {
-        day: 12, date: "2026-06-13", title: "巴黎铁塔视角与蒙马特", country: "FR", city: "巴黎", coord: [48.8566, 2.3522],
-        summary: "橘园、海军府、夏乐宫，再到蒙马特高地。",
-        transport: ["市内地铁 + 步行"],
-        stay: "",
-        spots: ["杜乐丽花园", "橘园美术馆", "海军府", "夏乐宫", "蒙马特高地", "圣心堂"],
-        tips: ["夏乐宫建议下午去，拍铁塔不逆光。", "夏乐宫是最后一次使用通票，确保 48 小时内不过期。"]
-      },
-      {
-        day: 13, date: "2026-06-14", title: "巴黎 → 采尔玛特", country: "CH", city: "采尔玛特", coord: [46.0207, 7.7491],
-        summary: "经 Basel 到 Zermatt，蓝调时刻拍马特洪峰。",
-        transport: ["07:22 Paris Gare de Lyon → 10:26 Basel SBB", "10:58 Basel SBB → 14:17 Zermatt"],
-        stay: "",
-        spots: ["Zermatt", "Matterhorn 马特洪峰", "Kirchbrücke 观景点"],
-        tips: ["蓝调时刻去经典观景台，天气好能拍到马特洪峰。"]
-      },
-      {
-        day: 14, date: "2026-06-15", title: "采尔玛特 → 施皮茨", country: "CH", city: "施皮茨", coord: [46.688, 7.679],
-        summary: "上午转场到施皮茨，下午湖边小镇线。",
-        transport: ["08:37 Zermatt → 10:21 Spiez"],
-        stay: "施皮茨（连续两晚）",
-        spots: ["施皮茨", "布里恩茨", "龙疆", "图恩湖"],
-        tips: ["天气好可看日照金山。", "下午小镇可按体力取舍。"]
-      },
-      {
-        day: 15, date: "2026-06-16", title: "格林德瓦 + 劳特布伦嫩 + 米伦", country: "CH", city: "伯尔尼高地", coord: [46.6242, 8.0414],
-        summary: "门利兴、劳特布伦嫩、米伦鲜花谷三段轻徒步。",
-        transport: ["Spiez → Interlaken Ost 坐左侧看图恩湖", "Grindelwald 缆车 GB GGM → Mannlichen", "Lauterbrunnen 缆车到 Grutschalp，再小火车到 Murren（坐左侧）", "最晚 21:31 从 Lauterbrunnen 回 Spiez"],
-        stay: "施皮茨",
-        spots: ["格林德瓦", "梦幻山坡", "Mannlichen", "Kleine Scheidegg", "劳特布伦嫩", "Murren", "Allmendhubel", "Gimmelwald"],
-        tips: ["三条路线都偏轻松，可按时间放弃米伦步道。", "米伦鲜花谷可坐缆车上 Allmendhubel 后步行下来。"]
-      },
-      {
-        day: 16, date: "2026-06-17", title: "厄希嫩湖徒步 → 卢塞恩", country: "CH", city: "卢塞恩", coord: [47.0502, 8.3093],
-        summary: "Oeschinensee 徒步，之后转场 Luzern。",
-        transport: ["Spiez → Kandersteg / Oeschinensee", "Spiez → Luzern"],
-        stay: "",
-        spots: ["厄希嫩湖", "Kandersteg", "卢塞恩"],
-        tips: ["湖区徒步注意天气窗口，雨天优先降低徒步强度。"]
-      },
-      {
-        day: 17, date: "2026-06-18", title: "Stoos 徒步 → 米兰", country: "CH", city: "Stoos / 米兰", coord: [46.981, 8.664],
-        summary: "Stoos 山脊徒步后返回米兰。",
-        transport: ["Luzern → Stoos", "Luzern → Milan"],
-        stay: "",
-        spots: ["Stoos", "Fronalpstock", "Klingenstock", "米兰"],
-        tips: ["Stoos 山脊线天气很关键，强风或低云时谨慎。"]
-      },
-      {
-        day: 18, date: "2026-06-19", title: "米兰 → 回国", country: "IT", city: "米兰", coord: [45.4642, 9.19],
-        summary: "米兰大教堂、拱廊和最后的晚餐，晚上返程。",
-        transport: ["22:15 飞机起飞"],
-        stay: "",
-        spots: ["米兰大教堂", "埃马努埃莱二世拱廊", "圣母恩宠教堂", "最后的晚餐"],
-        tips: ["原攻略最后一天也写为 D17；网页按日期修正为 D18。", "《最后的晚餐》抢票很难，通常提前三个月。"]
-      }
-    ];
-
-    const bookingList = [
-      { key: "vatican", name: "梵蒂冈博物馆", when: "D9 6/10", lead: "越早越好，官方提前数月放票", url: "https://tickets.museivaticani.va/home" },
-      { key: "colosseum", name: "罗马斗兽场顶层 / Full Experience", when: "D7 6/8", lead: "约提前 1 个月抢，按预约时间进场", url: "https://ticketing.colosseo.it/zh/" },
-      { key: "lastsupper", name: "米兰《最后的晚餐》", when: "D18 6/19", lead: "约提前 3 个月抢", url: "https://cenacolovinciano.vivaticket.it/" },
-      { key: "sanmarco", name: "圣马可教堂", when: "D5 6/6", lead: "提前 1 天也常可买", url: "https://basilicasanmarco.skiperformance.com/en/store#/en/buy" },
-      { key: "vecchio", name: "旧宫登顶", when: "D6 6/7", lead: "提前线上买，避开现场队伍", url: "https://musefirenze.it/en/museums/museo-di-palazzo-vecchio/" },
-      { key: "pantheon", name: "罗马万神殿", when: "D8 6/9", lead: "线上买或现场排队", url: "https://www.museiitaliani.it/en/museums/588" },
-      { key: "parispass", name: "巴黎博物馆通票 48h", when: "D10-D12", lead: "从奥赛入场开始计时", url: "https://www.parismuseumpass.fr" },
-      { key: "sainte", name: "圣礼拜堂", when: "D11 6/12", lead: "预约 + 排队，9:00 开门", url: "https://www.sainte-chapelle.fr/en/visit" },
-      { key: "louvre", name: "卢浮宫", when: "D11 6/12", lead: "预约 + 排队，周五夜场", url: "https://www.ticketlouvre.fr/louvre/b2c/index.cfm/home" },
-      { key: "orangerie", name: "橘园美术馆", when: "D12 6/13", lead: "预约 + 排队", url: "https://www.musee-orangerie.fr/en" },
-      { key: "drei", name: "三峰山 444 路公交", when: "D4 6/5", lead: "提前购买车票并确认班次", url: "https://www.drei-zinnen.com/en/three-peaks/tickets.html" }
-    ];
-
-    const quickLinks = [
-      { group: "交通", items: [
-        ["Trenitalia 意铁", "https://www.trenitalia.com/en.html"],
-        ["Italo 高铁", "https://www.italotreno.it/en"],
-        ["SBB 瑞铁", "https://www.sbb.ch/en"],
-        ["SNCF 法铁", "https://www.sncf-connect.com/en-en/"],
-        ["巴黎 RATP", "https://www.ratp.fr/en"],
-        ["罗马 ATAC", "https://www.atac.roma.it/en"],
-        ["米兰 ATM", "https://www.atm.it/en/Pages/default.aspx"]
-      ]},
-      { group: "票务", items: [
-        ["罗马斗兽场", "https://ticketing.colosseo.it/zh/"],
-        ["巴黎博物馆通票", "https://www.parismuseumpass.fr"],
-        ["梵蒂冈博物馆", "https://tickets.museivaticani.va/home"],
-        ["最后的晚餐", "https://cenacolovinciano.vivaticket.it/"],
-        ["三峰山 444 公交", "https://www.drei-zinnen.com/en/three-peaks/tickets.html"]
-      ]},
-      { group: "天气", items: [
-        ["米兰天气", "https://weather.com/weather/today/l/Milan+Lombardy+Italy"],
-        ["多洛米蒂天气", "https://weather.com/weather/today/l/Dolomites+Italy"],
-        ["威尼斯天气", "https://weather.com/weather/today/l/Venice+Veneto+Italy"],
-        ["佛罗伦萨天气", "https://weather.com/weather/today/l/Florence+Tuscany+Italy"],
-        ["罗马天气", "https://weather.com/weather/today/l/Rome+Lazio+Italy"],
-        ["巴黎天气", "https://weather.com/weather/today/l/Paris+France"],
-        ["采尔玛特天气", "https://weather.com/weather/today/l/Zermatt+Valais+Switzerland"],
-        ["卢塞恩天气", "https://weather.com/weather/today/l/Lucerne+Switzerland"]
-      ]}
-    ];
-
-    const phrases = [
-      { category: "问路", zh: "请问火车站在哪里？", it: "Dov'è la stazione?", fr: "Où est la gare ?", de: "Wo ist der Bahnhof?" },
-      { category: "问路", zh: "我想去这个地址。", it: "Vorrei andare a questo indirizzo.", fr: "Je voudrais aller à cette adresse.", de: "Ich möchte zu dieser Adresse." },
-      { category: "交通", zh: "这趟车到这里吗？", it: "Questo treno va qui?", fr: "Ce train va ici ?", de: "Fährt dieser Zug hierhin?" },
-      { category: "点餐", zh: "请给我菜单。", it: "Il menù, per favore.", fr: "La carte, s'il vous plaît.", de: "Die Speisekarte, bitte." },
-      { category: "点餐", zh: "我不要冰。", it: "Senza ghiaccio, per favore.", fr: "Sans glaçons, s'il vous plaît.", de: "Ohne Eis, bitte." },
-      { category: "购物", zh: "可以刷卡吗？", it: "Posso pagare con carta?", fr: "Je peux payer par carte ?", de: "Kann ich mit Karte zahlen?" },
-      { category: "求助", zh: "我需要帮助。", it: "Ho bisogno di aiuto.", fr: "J'ai besoin d'aide.", de: "Ich brauche Hilfe." },
-      { category: "医疗", zh: "我不舒服，需要医生。", it: "Non mi sento bene, ho bisogno di un medico.", fr: "Je ne me sens pas bien, j'ai besoin d'un médecin.", de: "Mir geht es nicht gut, ich brauche einen Arzt." }
-    ];
-
-    const emergency = [
-      { name: "欧洲统一紧急电话", number: "112", note: "警察、消防、急救通用" },
-      { name: "意大利警察", number: "113", note: "紧急警务" },
-      { name: "意大利医疗急救", number: "118", note: "急救车" },
-      { name: "法国警察", number: "17", note: "紧急警务" },
-      { name: "法国医疗急救 SAMU", number: "15", note: "急救" },
-      { name: "瑞士警察", number: "117", note: "紧急警务" },
-      { name: "瑞士医疗急救", number: "144", note: "急救" },
-      { name: "外交部全球领保热线", number: "+861012308", note: "中国公民海外紧急求助" }
-    ];
-
-    const tips = [
-      ["小费", "意法瑞通常不强制小费。餐厅若已含服务费可不用另给；满意可留 5%-10% 或几枚硬币。"],
-      ["退税", "购物前确认 Tax Free 标识，保留护照信息、票据和未拆封商品，离境前预留足够时间办理。"],
-      ["饮水", "意大利许多城市有公共饮水点；瑞士自来水普遍可饮用；巴黎可找 Wallace 喷泉。"],
-      ["卫生间", "火车站和景点厕所常收费，随身备 1-2€ 硬币。"],
-      ["防盗", "火车站、地铁、热门广场和桥上注意拉链包、手机绳和外套口袋。"],
-      ["山地", "多洛米蒂和瑞士徒步要看天气、末班车、缆车停运时间；离线地图提前下载。"]
-    ];
-
-    const currencyDefaults = { EUR: 7.85, CHF: 8.65 };
-    const startDate = new Date("2026-06-02T00:00:00+02:00");
-    const endDate = new Date("2026-06-19T23:59:59+02:00");
-
-    function cnDate(iso) {
-      const date = new Date(`${iso}T12:00:00+02:00`);
-      return date.toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "short" });
-    }
-
-    function daysBetween(a, b) {
-      return Math.ceil((a.getTime() - b.getTime()) / 86400000);
-    }
-
-    function getTodayDay() {
-      const now = new Date();
-      if (now < startDate) return null;
-      if (now > endDate) return 18;
-      return Math.min(18, Math.max(1, daysBetween(now, startDate) + 1));
-    }
-
-    function mapUrl(query) {
-      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-    }
-
-    function classNames(...parts) {
-      return parts.filter(Boolean).join(" ");
-    }
-
-    function useLocalStorage(key, fallback) {
-      const [value, setValue] = useState(() => {
-        try {
-          const saved = localStorage.getItem(key);
-          return saved ? JSON.parse(saved) : fallback;
-        } catch {
-          return fallback;
-        }
-      });
-      useEffect(() => {
-        try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
-      }, [key, value]);
-      return [value, setValue];
-    }
-
-    function Icon({ children }) {
-      return <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-lg">{children}</span>;
-    }
-
-    function Header({ todayDay, dark, setDark }) {
-      const [now, setNow] = useState(new Date());
-      useEffect(() => {
-        const id = setInterval(() => setNow(new Date()), 1000);
-        return () => clearInterval(id);
-      }, []);
-      const countdown = daysBetween(startDate, now);
-      const beijing = now.toLocaleTimeString("zh-CN", { timeZone: "Asia/Shanghai", hour: "2-digit", minute: "2-digit" });
-      const europe = now.toLocaleTimeString("zh-CN", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit" });
-
-      return (
-        <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/65 px-4 py-3 backdrop-blur-xl dark:bg-slate-950/65">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-orange-200/80">Italy · France · Switzerland</p>
-              <h1 className="text-xl font-bold text-white md:text-2xl">意法瑞旅行助手</h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="hidden rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-right text-xs text-slate-200 sm:block">
-                <div>北京 {beijing}</div>
-                <div>欧洲 {europe}</div>
-              </div>
-              <button
-                className="min-h-11 rounded-2xl border border-white/10 bg-white/10 px-3 text-sm font-semibold text-white"
-                onClick={() => setDark(!dark)}
-                aria-label="切换主题"
-              >
-                {dark ? "夜间" : "白天"}
-              </button>
-            </div>
+    <main>
+      <!-- Map Section -->
+      <section id="tab-map" class="section active" aria-labelledby="mapTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="mapTitle">行程地图</h2>
+            <p>点击地图标记查看当天信息，或点击下方日期按钮跳转。</p>
           </div>
-          <div className="mx-auto mt-3 grid max-w-6xl grid-cols-3 gap-2 text-center text-xs sm:hidden">
-            <div className="rounded-xl bg-white/10 px-2 py-2">北京 {beijing}</div>
-            <div className="rounded-xl bg-white/10 px-2 py-2">欧洲 {europe}</div>
-            <div className="rounded-xl bg-white/10 px-2 py-2">{todayDay ? `今日 D${todayDay}` : countdown > 0 ? `${countdown}天后出发` : "旅程已结束"}</div>
-          </div>
-        </header>
-      );
-    }
+        </div>
+        <div class="map-wrap">
+          <div id="trip-map"></div>
+          <div class="map-day-btns" id="mapDayBtns"></div>
+        </div>
+        <div id="mapDetail" class="card" style="padding:18px; display:none;"></div>
+      </section>
 
-    function Hero({ todayDay }) {
-      const todayItem = itinerary.find(d => d.day === todayDay);
-      return (
-        <section className="mx-auto max-w-6xl px-4 pt-6">
-          <div className="glass overflow-hidden rounded-[2rem] p-5 md:p-8">
-            <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr] md:items-center">
-              <div>
-                <p className="mb-3 inline-flex rounded-full border border-orange-300/20 bg-orange-500/15 px-3 py-1 text-sm font-medium text-orange-100">
-                  2026.06.02 - 06.19 · 18天
-                </p>
-                <h2 className="text-3xl font-black leading-tight text-white md:text-5xl">把行程、地图和应急工具都装进一个页面</h2>
-                <p className="mt-4 text-sm leading-7 text-slate-300 md:text-base">
-                  为移动端查看优化：欧洲路线地图、今日高亮、景点地图、抢票清单、汇率、时钟、常用语和紧急电话都在这里。
-                </p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  <a href="#timeline" className="min-h-11 rounded-2xl bg-orange-400 px-4 py-3 text-sm font-bold text-slate-950">看今日行程</a>
-                  <a href="#tools" className="min-h-11 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-bold text-white">打开工具箱</a>
-                </div>
-              </div>
-              <div className="rounded-[1.75rem] border border-white/10 bg-white/10 p-4">
-                <p className="text-sm text-slate-300">当前状态</p>
-                <div className="mt-3 rounded-2xl bg-slate-950/45 p-4">
-                  <div className="text-4xl font-black text-white">{todayItem ? `D${todayItem.day}` : "出发前"}</div>
-                  <div className="mt-2 text-lg font-semibold text-orange-100">{todayItem ? todayItem.title : "先把网页加入手机主屏幕"}</div>
-                  <div className="mt-2 text-sm leading-6 text-slate-300">{todayItem ? todayItem.summary : "出发前打开一次页面，让 CDN 资源进入浏览器缓存。"}</div>
-                </div>
-                <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs text-slate-300">
-                  <div className="rounded-xl bg-white/10 p-3"><b className="block text-lg text-white">3</b>国家</div>
-                  <div className="rounded-xl bg-white/10 p-3"><b className="block text-lg text-white">18</b>地图点</div>
-                  <div className="rounded-xl bg-white/10 p-3"><b className="block text-lg text-white">18</b>天</div>
-                </div>
-              </div>
+      <!-- Itinerary Section -->
+      <section id="tab-trip" class="section" aria-labelledby="tripTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="tripTitle">每日行程</h2>
+            <p>卡片可展开；景点勾选、本地保存；地图按钮会打开 Google Maps。</p>
+          </div>
+          <div class="toolbar">
+            <button class="btn" id="expandAll" type="button">全部展开</button>
+            <button class="btn" id="collapseAll" type="button">全部折叠</button>
+            <button class="btn danger" id="resetChecks" type="button">重置打卡</button>
+          </div>
+        </div>
+        <div id="itineraryList"></div>
+      </section>
+
+      <!-- Tools Section -->
+      <section id="tab-tools" class="section" aria-labelledby="toolsTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="toolsTitle">出行工具</h2>
+            <p>换汇、时区、AA、小费和天气入口，全部在本页完成。</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <article class="card tool-card">
+            <h3>多币种换算</h3>
+            <div class="field-grid">
+              <label class="field">欧元 EUR<input inputmode="decimal" id="eurInput" placeholder="0"></label>
+              <label class="field">瑞郎 CHF<input inputmode="decimal" id="chfInput" placeholder="0"></label>
+              <label class="field">人民币 CNY<input inputmode="decimal" id="cnyInput" placeholder="0"></label>
             </div>
+            <p class="muted" style="margin:10px 0 6px">参考汇率（可按出行当天改成实时汇率）：</p>
+            <div class="field-grid">
+              <label class="field">1 EUR = CNY<input inputmode="decimal" id="rateEurCny"></label>
+              <label class="field">1 CHF = CNY<input inputmode="decimal" id="rateChfCny"></label>
+            </div>
+          </article>
+
+          <article class="card tool-card">
+            <h3>双时区时钟</h3>
+            <div class="clock-grid">
+              <div class="clock"><span class="muted">北京</span><strong id="cnClock">--:--</strong></div>
+              <div class="clock"><span class="muted">欧洲中部夏令时</span><strong id="euClock">--:--</strong></div>
+            </div>
+            <p class="muted" id="timeHint" style="margin-top:10px">正在判断欧洲当地时段。</p>
+          </article>
+
+          <article class="card tool-card">
+            <h3>AA / 小费计算</h3>
+            <div class="field-grid">
+              <label class="field">账单金额<input inputmode="decimal" id="billInput" value="40"></label>
+              <label class="field">人数<input inputmode="numeric" id="peopleInput" value="2"></label>
+              <label class="field">小费 %<input inputmode="decimal" id="tipInput" value="0"></label>
+            </div>
+            <div class="calc-result">
+              <div>每人约 <strong id="perPerson">€20.00</strong></div>
+            </div>
+            <p class="muted" style="margin-top:8px">意大利餐厅常见 coperto（座位费），通常已单独列出。</p>
+          </article>
+
+          <article class="card tool-card">
+            <h3>城市天气</h3>
+            <p class="muted">点击会打开实时天气页面；山区天气变化快，徒步前再确认一次。</p>
+            <div class="weather-grid" id="weatherGrid"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Links Section -->
+      <section id="tab-links" class="section" aria-labelledby="linksTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="linksTitle">常用网址</h2>
+            <p>交通、票务、地图、翻译和天气入口集中在这里。</p>
           </div>
-        </section>
-      );
+        </div>
+        <div id="linksList"></div>
+      </section>
+
+      <!-- Packing Section -->
+      <section id="tab-pack" class="section" aria-labelledby="packTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="packTitle">行李清单</h2>
+            <p>出发前逐项勾选；状态会保存在本机浏览器。</p>
+          </div>
+          <div class="toolbar">
+            <button class="btn danger" id="resetPack" type="button">重置行李勾选</button>
+          </div>
+        </div>
+        <div class="pack-grid" id="packList"></div>
+      </section>
+
+      <!-- SOS Section -->
+      <section id="tab-sos" class="section" aria-labelledby="sosTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="sosTitle">应急信息</h2>
+            <p>电话号码可直接拨打；出行前建议再到使领馆官网复核一次。</p>
+          </div>
+        </div>
+        <div class="sos-grid" id="sosList"></div>
+        <div class="section-head">
+          <div>
+            <h2>常用短句</h2>
+            <p>覆盖问路、购票、求助、就医等高频场景。</p>
+          </div>
+        </div>
+        <div class="phrase-wrap" id="phraseTable"></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="主导航">
+    <div class="nav-inner">
+      <button class="nav-btn active" type="button" data-tab="map"><span class="icon">🗺</span>地图</button>
+      <button class="nav-btn" type="button" data-tab="trip"><span class="icon">日</span>行程</button>
+      <button class="nav-btn" type="button" data-tab="tools"><span class="icon">算</span>工具</button>
+      <button class="nav-btn" type="button" data-tab="links"><span class="icon">链</span>网址</button>
+      <button class="nav-btn" type="button" data-tab="pack"><span class="icon">包</span>行李</button>
+      <button class="nav-btn" type="button" data-tab="sos"><span class="icon">急</span>应急</button>
+    </div>
+  </nav>
+
+  <script>
+    const STORAGE_PREFIX = "dd:";
+    const START_DATE = "2026-06-02";
+    const END_DATE = "2026-06-19";
+
+    const ITINERARY = [
+      { day:1, date:"2026-06-02", title:"米兰落地", route:"MXP T1 → 米兰中央火车站", city:"米兰", country:"it", coord:[45.4642,9.19],
+        transport:["20:15 抵达 MXP T1","机场大巴（约 10€）到中央火车站附近"],
+        stay:"Seveso Milan Central Rooms",
+        places:["MXP T1","Milano Centrale","Seveso Milan Central Rooms"],
+        checklist:["抵达 MXP T1","买机场大巴票","到中央火车站附近","入住 Seveso Milan Central Rooms"],
+        tips:["飞机上尽量睡觉；没休息好的话落地后可以再倒倒时差。"],
+        tickets:[] },
+      { day:2, date:"2026-06-03", title:"米兰 → 多洛米蒂", route:"Milano Centrale → Verona → Bressanone", city:"Bressanone / 富内斯", country:"it", coord:[46.7164,11.6573],
+        transport:["06:25 Milano Centrale → 08:17 Verona Porta Nuova · 无需订座","09:01 Verona Porta Nuova → 11:02 Bressanone/Brixen · 无法线上订座"],
+        stay:"Vintlerhof",
+        places:["Bressanone/Brixen","Vintlerhof","富内斯山谷 Val di Funes","孤独教堂 Chiesetta di San Giovanni"],
+        checklist:["抵达 Bressanone/Brixen","入住 Vintlerhof","富内斯山谷","孤独教堂","等夕阳日照金山"],
+        tips:["下午游览富内斯山谷 + 孤独教堂，运气好可以看到夕阳时分的日照金山。"],
+        tickets:[] },
+      { day:3, date:"2026-06-04", title:"多洛米蒂", route:"Brixen → Cristina → Seceda / Ortisei", city:"多洛米蒂", country:"it", coord:[46.597,11.724],
+        transport:["Brixen 坐公交到 Cristina 小镇上山","Seceda 山顶后可从 Ortisei 下山或原路返回"],
+        stay:"Vintlerhof",
+        places:["Seceda 刀锋山","Cristina","Ortisei","Alpe di Siusi 休斯高原"],
+        checklist:["从 Brixen 出发去 Cristina","刀锋山 Seceda 徒步","决定 Ortisei 下山或原路返回","休斯高原 Alpe di Siusi"],
+        tips:["Seceda 缆车单程 49€，往返 74€；休斯高原缆车往返 41€。"],
+        tickets:[] },
+      { day:4, date:"2026-06-05", title:"多洛米蒂", route:"三峰山徒步", city:"Tre Cime", country:"it", coord:[46.6187,12.3028],
+        transport:["前往三峰山的 444 路公交车需要提前购买车票"],
+        stay:"Vintlerhof",
+        places:["Tre Cime di Lavaredo 三峰山","魔戒之路"],
+        checklist:["确认 444 路公交车票","三峰山环线徒步","魔戒之路"],
+        tips:["三峰山天气变化快，出发前再确认班车与封路情况。"],
+        tickets:[{label:"三峰山 444 路公交",url:"https://www.drei-zinnen.com"}] },
+      { day:5, date:"2026-06-06", title:"Brixen → 威尼斯", route:"Brixen → Venezia Mestre", city:"威尼斯", country:"it", coord:[45.4408,12.3155],
+        transport:["06:55 Brixen → 10:50 Venezia Mestre"],
+        stay:"",
+        places:["Venezia Mestre","赤足桥","里亚托桥","沉船书店","叹息桥","圣马可广场","圣马可大教堂","学院桥","宪法桥"],
+        checklist:["抵达 Venezia Mestre","赤足桥","里亚托桥","沉船书店","叹息桥","圣马可广场＆教堂","学院桥看日落","宪法桥"],
+        tips:["全程步行 citywalk。","圣马可教堂需线上预约购票，提前一天通常也能买。"],
+        tickets:[{label:"圣马可大教堂",url:"https://basilicasanmarco.skiperformance.com/en/store"}] },
+      { day:6, date:"2026-06-07", title:"威尼斯 → 佛罗伦萨（免费日）", route:"Venezia Mestre → Firenze S.M. Novella", city:"佛罗伦萨", country:"it", coord:[43.7696,11.2558],
+        transport:["07:38 Venezia Mestre → 09:39 Firenze S.M. Novella · 需订座 13€","提前一小时也有一班"],
+        stay:"",
+        places:["学院美术馆","共和广场","领主广场","旧宫","乌菲兹美术馆","老桥","碧提宫","波波里花园","米开朗基罗广场"],
+        checklist:["学院美术馆","共和广场","领主广场","旧宫登顶","乌菲兹美术馆","老桥","碧提宫和波波里花园（可选）","米开朗基罗广场看日落"],
+        tips:["旧宫登顶票提前线上买。其他博物馆免费日直接入口处排队取票；波波里花园和碧提宫要先去买票窗口领票。"],
+        tickets:[{label:"旧宫",url:"https://musefirenze.it/en/musei/museo-di-palazzo-vecchio/"},{label:"乌菲兹",url:"https://www.uffizi.it/en/tickets"},{label:"学院美术馆",url:"https://www.galleriaaccademiafirenze.it/en/tickets/"}] },
+      { day:7, date:"2026-06-08", title:"佛罗伦萨 → 罗马", route:"Firenze Campo di Marte → Roma Termini", city:"罗马", country:"it", coord:[41.9028,12.4964],
+        transport:["10:06 Firenze Campo di Marte → 11:24 Roma Termini"],
+        stay:"",
+        places:["中央市场","圣母百花大教堂","罗马斗兽场","帕拉丁山","古罗马广场","真理之口","橘园"],
+        checklist:["中央市场吃牛肚包","圣母百花大教堂外观","抵达 Roma Termini","罗马斗兽场","帕拉丁山","古罗马广场","真理之口","橘园日落"],
+        tips:["斗兽场顶层票需要提前一个月抢，必须严格按照买票时间进场。"],
+        tickets:[{label:"斗兽场官方购票",url:"https://ticketing.colosseo.it/zh/"}] },
+      { day:8, date:"2026-06-09", title:"罗马", route:"罗马历史中心", city:"罗马", country:"it", coord:[41.9028,12.4964],
+        transport:[],
+        stay:"",
+        places:["西班牙阶梯","特雷维喷泉","圣依纳爵堂","万神殿","纳沃纳广场","博尔盖塞公园","萍丘"],
+        checklist:["西班牙阶梯","特雷维喷泉","圣依纳爵堂","万神殿","纳沃纳广场","博尔盖塞公园","萍丘日落"],
+        tips:["西班牙阶梯和特雷维喷泉人很多，早上 7-8 点去最佳。","万神殿可以线上买，也可以线下排队买票。"],
+        tickets:[{label:"万神殿",url:"https://www.museiitaliani.it/en/museums/5f4014a4-8f29-4ba8-8f44-5516a0c99300"}] },
+      { day:9, date:"2026-06-10", title:"罗马 → 巴黎（飞）", route:"梵蒂冈 → 巴黎", city:"罗马 / 巴黎", country:"it", coord:[41.9028,12.4964],
+        transport:["易捷航空 U24958 19:30 → 21:35"],
+        stay:"",
+        places:["梵蒂冈博物馆","圣彼得大教堂","圣天使堡"],
+        checklist:["梵蒂冈博物馆最早入场","圣彼得大教堂登顶","圣彼得大教堂内部","圣天使堡外围","易捷航空 U24958 飞巴黎"],
+        tips:["大教堂登顶票现场买；梵蒂冈博物馆提前半年就能买。","教堂着装不能穿无袖 / 短裙。","周三上午教堂有公开教皇活动，教堂可能不能参观。"],
+        tickets:[{label:"梵蒂冈博物馆",url:"https://tickets.museivaticani.va/home"}] },
+      { day:10, date:"2026-06-11", title:"巴黎", route:"凯旋门 / 奥赛 / 香榭丽舍", city:"巴黎", country:"fr", coord:[48.8566,2.3522],
+        transport:[],
+        stay:"",
+        places:["凯旋门","香榭丽舍大道","协和广场","巴黎歌剧院","奥赛博物馆"],
+        checklist:["凯旋门外观","香榭丽舍大道","协和广场","巴黎歌剧院","奥赛博物馆","21:00 左右上凯旋门看日落和蓝调"],
+        tips:["奥赛周四开放夜场（21:45 关门）。买 48 小时博物馆通票，从进奥赛开始使用。","奥赛有通票专门通道 C1，可以不预约。","凯旋门可看到埃菲尔铁塔日落后整点闪灯。"],
+        tickets:[{label:"巴黎博物馆通票",url:"https://www.parismuseumpass.fr"},{label:"奥赛",url:"https://www.musee-orsay.fr/en/tickets"},{label:"凯旋门",url:"https://www.paris-arc-de-triomphe.fr/en/visit/prepare-your-visit"}] },
+      { day:11, date:"2026-06-12", title:"巴黎", route:"圣礼拜堂 / 卢浮宫 / 塞纳河", city:"巴黎", country:"fr", coord:[48.8566,2.3522],
+        transport:[],
+        stay:"",
+        places:["圣礼拜教堂","巴黎圣母院","先贤祠","卢浮宫","莎士比亚书店","卢森堡公园","Vedettes du Pont Neuf"],
+        checklist:["圣礼拜教堂（9:00 开门）","巴黎圣母院","先贤祠","卢浮宫夜场","莎士比亚书店 / 卢森堡公园（可选）","塞纳河游船（新桥码头）"],
+        tips:["圣礼拜教堂预约 + 排队；巴黎圣母院如上塔楼需预约。","卢浮宫周五开放夜场（21:00 关门）。大概八九点游览完出来坐塞纳河游船。"],
+        tickets:[{label:"圣礼拜教堂",url:"https://www.sainte-chapelle.fr/en"},{label:"卢浮宫",url:"https://www.ticketlouvre.fr"},{label:"新桥游船",url:"https://www.vedettesdupontneuf.com"}] },
+      { day:12, date:"2026-06-13", title:"巴黎", route:"橘园 / 夏乐宫 / 蒙马特", city:"巴黎", country:"fr", coord:[48.8566,2.3522],
+        transport:[],
+        stay:"",
+        places:["杜乐丽花园","橘园美术馆","海军府","夏乐宫","蒙马特高地"],
+        checklist:["杜乐丽花园","橘园美术馆","海军府","夏乐宫拍铁塔","蒙马特高地"],
+        tips:["进夏乐宫是最后一次使用通票，确保不过期。需在下午进入，拍铁塔不逆光。"],
+        tickets:[{label:"橘园",url:"https://www.musee-orangerie.fr/en"},{label:"海军府",url:"https://www.hotel-de-la-marine.paris/en"}] },
+      { day:13, date:"2026-06-14", title:"巴黎 → 采尔玛特", route:"Paris Gare de Lyon → Basel → Zermatt", city:"采尔玛特", country:"ch", coord:[46.0207,7.7491],
+        transport:["07:22 Paris Gare de Lyon → 10:26 Basel SBB","10:58 Basel SBB → 14:17 Zermatt"],
+        stay:"",
+        places:["Paris Gare de Lyon","Basel SBB","Zermatt","Matterhorn","Kirchbrücke Zermatt"],
+        checklist:["赶 07:22 巴黎里昂站火车","Basel SBB 换乘","抵达 Zermatt","游览马特洪峰","蓝调时刻经典机位拍照"],
+        tips:["瑞士段注意站台换乘时间；采尔玛特禁燃油车，站内外以步行 / 电动车为主。"],
+        tickets:[{label:"SBB 瑞士铁路",url:"https://www.sbb.ch/en"}] },
+      { day:14, date:"2026-06-15", title:"采尔玛特 → 施皮茨", route:"Zermatt → Spiez", city:"施皮茨", country:"ch", coord:[46.688,7.679],
+        transport:["08:37 Zermatt → 10:21 Spiez"],
+        stay:"施皮茨（之后两天）",
+        places:["Zermatt","Spiez","Brienz","Lungern"],
+        checklist:["天气好看日照金山","08:37 离开 Zermatt","抵达 Spiez","施皮茨小镇","布里恩茨","龙疆"],
+        tips:["之后两天都住施皮茨；小镇游览按天气和体力调整。"],
+        tickets:[{label:"SBB 瑞士铁路",url:"https://www.sbb.ch/en"}] },
+      { day:15, date:"2026-06-16", title:"格林德瓦 + 劳特布伦嫩 + 米伦", route:"Spiez → Interlaken Ost → Grindelwald / Mürren", city:"伯尔尼高地", country:"ch", coord:[46.6242,8.0414],
+        transport:["施皮茨到因特拉肯东坐左边，可看图恩湖全景","米伦回施皮茨最晚 21:31 从劳特布伦嫩出发"],
+        stay:"施皮茨",
+        places:["Interlaken Ost","Grindelwald","Männlichen","Kleine Scheidegg","Lauterbrunnen","Grütschalp","Mürren","Allmendhubel","Gimmelwald"],
+        checklist:["坐左侧看图恩湖","格林德瓦梦幻山坡","GB GGM 缆车至 Männlichen","Männlichen 徒步至 Kleine Scheidegg","劳特布伦嫩小镇","Grütschalp → 米伦左侧景观","Allmendhubel 鲜花谷徒步","米伦步道至 Gimmelwald（可选）"],
+        tips:["三条徒步路线都较轻松，基本属于闲逛型；时间不够可放弃米伦步道，从米伦回施皮茨。"],
+        tickets:[{label:"Jungfrau Region",url:"https://www.jungfrau.ch/en-gb/"}] },
+      { day:16, date:"2026-06-17", title:"厄希嫩湖徒步", route:"Spiez → Oeschinensee → Luzern", city:"厄希嫩湖 / 卢塞恩", country:"ch", coord:[47.0502,8.3093],
+        transport:["Spiez → Luzern"],
+        stay:"Luzern",
+        places:["Oeschinensee","Kandersteg","Luzern"],
+        checklist:["厄希嫩湖徒步","从 Spiez 前往 Luzern","入住卢塞恩"],
+        tips:["厄希嫩湖徒步前重点看天气、缆车运行和山路开放状态。"],
+        tickets:[{label:"厄希嫩湖缆车",url:"https://www.oeschinensee.ch/en/"}] },
+      { day:17, date:"2026-06-18", title:"Stoos 徒步", route:"Luzern → Stoos → Milan", city:"Stoos / 米兰", country:"ch", coord:[46.981,8.664],
+        transport:["Luzern → Milan"],
+        stay:"米兰",
+        places:["Stoos","Fronalpstock","Klingenstock","Milan"],
+        checklist:["Stoos 徒步","确认返回米兰火车","抵达米兰"],
+        tips:["Stoos 山脊徒步看天气决定是否上山，风大或低云时可改卢塞恩市区。"],
+        tickets:[{label:"Stoos 官方",url:"https://stoos-muotatal.ch/en/"}] },
+      { day:18, date:"2026-06-19", title:"米兰 → 回国", route:"米兰市区 → 机场", city:"米兰", country:"it", coord:[45.4642,9.19],
+        transport:["22:15 飞机起飞"],
+        stay:"",
+        places:["米兰大教堂","埃马努埃莱二世拱廊","圣母恩宠教堂","The Last Supper"],
+        checklist:["米兰大教堂","埃马努埃莱二世拱廊","圣母恩宠教堂《最后的晚餐》（如抢到票）","提前去机场","22:15 起飞"],
+        tips:["《最后的晚餐》抢票很难，通常提前三个月放票。"],
+        tickets:[{label:"米兰大教堂",url:"https://www.duomomilano.it/en/buy-tickets/"},{label:"最后的晚餐",url:"https://cenacolovinciano.vivaticket.it/"}] }
+    ];
+
+    const WEATHER_CITIES = [["Milan","米兰"],["Bressanone","Brixen / 多洛米蒂"],["Venice","威尼斯"],["Florence","佛罗伦萨"],["Rome","罗马"],["Paris","巴黎"],["Zermatt","采尔玛特"],["Spiez","施皮茨"],["Luzern","卢塞恩"]];
+
+    const LINK_GROUPS = [
+      { title:"火车 / 交通", links:[["Trenitalia","意大利铁路","https://www.trenitalia.com/en.html"],["Italo","意大利高速铁路备选","https://www.italotreno.it/en"],["ÖBB","奥地利铁路，北意常用","https://www.oebb.at/en/"],["SBB","瑞士铁路","https://www.sbb.ch/en"],["SNCF Connect","法国铁路","https://www.sncf-connect.com/en-en/"],["三峰山 444 路","Tre Cime 信息","https://www.drei-zinnen.com"]] },
+      { title:"景点票务", links:[["斗兽场","罗马斗兽场官方","https://ticketing.colosseo.it/zh/"],["梵蒂冈","梵蒂冈官方预约","https://tickets.museivaticani.va/home"],["巴黎博物馆通票","Paris Museum Pass","https://www.parismuseumpass.fr"],["卢浮宫","Louvre 官方","https://www.ticketlouvre.fr"],["奥赛","Musée d'Orsay","https://www.musee-orsay.fr/en/tickets"],["乌菲兹","Uffizi","https://www.uffizi.it/en/tickets"],["学院美术馆","大卫像预约","https://www.galleriaaccademiafirenze.it/en/tickets/"],["最后的晚餐","Cenacolo Vinciano","https://cenacolovinciano.vivaticket.it/"]] },
+      { title:"地图 / 翻译 / 天气", links:[["Google Maps","地图和导航","https://www.google.com/maps"],["Citymapper","城市公交通","https://citymapper.com/"],["Google Translate","拍照翻译","https://translate.google.com/"],["DeepL","高质量翻译","https://www.deepl.com/translator"],["Windy","风雨云图 / 徒步前看","https://www.windy.com/"]] },
+      { title:"航司 / 机场", links:[["easyJet","U24958 航班 / 值机","https://www.easyjet.com/en"],["MXP Airport","米兰马尔彭萨机场","https://www.milanomalpensa-airport.com/en"],["Paris Aéroport","巴黎机场","https://www.parisaeroport.fr/en"],["12308","中国领事服务网","https://cs.mfa.gov.cn/"]] }
+    ];
+
+    const PACKING = [
+      ["证件",["护照","签证 / 入境材料","机票 / 火车票电子版离线截图","酒店预订单","护照复印件","证件照 2 张","旅行保险单"]],
+      ["电子",["手机","充电宝（≤100Wh）","欧标转换头","Type-C / Lightning 线","相机","SD 卡","备用电池","耳机"]],
+      ["衣物",["徒步鞋","轻便鞋","防风冲锋衣","长袖","T 恤","长裤","内衣袜","薄围巾（教堂遮肩）","太阳镜","帽子"]],
+      ["洗漱",["牙刷牙膏（欧洲酒店常不提供）","洗发沐浴分装","毛巾","防晒","护肤","剃须 / 卸妆用品"]],
+      ["药品",["感冒药","肠胃药","止泻药","晕车药","创可贴","个人处方药","驱蚊 / 止痒"]],
+      ["其他",["VISA / MasterCard 各一张","少量现金欧元 / 瑞郎","雨衣","密封袋","洗衣袋","晾衣绳","轻便水壶"]]
+    ];
+
+    const SOS_GROUPS = [
+      { title:"当地紧急电话", items:[["欧盟通用紧急号","112"],["意大利警察","113"],["意大利火警","115"],["意大利医疗急救","118"],["法国报警","17"],["法国医疗急救","15"],["法国火警","18"],["瑞士报警","117"],["瑞士医疗急救","144"],["瑞士火警","118"]] },
+      { title:"中国领保", items:[["外交部全球领保热线","+861012308"],["驻意大利使馆（罗马）","+393939110852"],["驻米兰总领馆","+393242616666"],["驻佛罗伦萨总领馆","+393357748753"],["驻法国使馆领保","+33149521950"],["驻瑞士使馆领保","+41313527333"]] },
+      { title:"机场 / 出租", items:[["米兰 Malpensa","+390226800627"],["罗马 Fiumicino","+390665951"],["罗马 Taxi","+39066645"],["米兰 Taxi","+39025353"]] },
+      { title:"丢失证件时", notes:["先报警并拿报案记录，再联系最近的中国使领馆。","保留护照首页、签证、机票、酒店订单的离线截图。","如银行卡遗失，先在银行 App 冻结或拨打发卡行电话。"] }
+    ];
+
+    const PHRASES = [
+      ["你好 / 谢谢","Hello / Thank you","Ciao / Grazie","Bonjour / Merci","Hallo / Danke"],
+      ["请问洗手间在哪里？","Where is the restroom?","Dov'è il bagno?","Où sont les toilettes ?","Wo ist die Toilette?"],
+      ["我要去这个地址。","I want to go to this address.","Vorrei andare a questo indirizzo.","Je voudrais aller à cette adresse.","Ich möchte zu dieser Adresse."],
+      ["这个多少钱？","How much is this?","Quanto costa?","C'est combien ?","Wie viel kostet das?"],
+      ["可以刷卡吗？","Can I pay by card?","Posso pagare con carta?","Je peux payer par carte ?","Kann ich mit Karte zahlen?"],
+      ["请给我一张车票。","One ticket, please.","Un biglietto, per favore.","Un billet, s'il vous plaît.","Eine Fahrkarte, bitte."],
+      ["我迷路了。","I am lost.","Mi sono perso/a.","Je suis perdu(e).","Ich habe mich verlaufen."],
+      ["请帮我叫救护车。","Please call an ambulance.","Chiami un'ambulanza, per favore.","Appelez une ambulance, s'il vous plaît.","Bitte rufen Sie einen Krankenwagen."],
+      ["我需要去医院。","I need to go to a hospital.","Devo andare in ospedale.","Je dois aller à l'hôpital.","Ich muss ins Krankenhaus."],
+      ["我对这个过敏。","I am allergic to this.","Sono allergico/a a questo.","Je suis allergique à ça.","Ich bin dagegen allergisch."]
+    ];
+
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+    function key(n) { return STORAGE_PREFIX + n; }
+    function slug(v) { return String(v).toLowerCase().normalize("NFKD").replace(/[^\p{Letter}\p{Number}]+/gu, "-").replace(/^-+|-+$/g, "").slice(0, 48); }
+    function esc(v) { return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+    function getStored(n, fb = "") { const v = localStorage.getItem(key(n)); return v === null ? fb : v; }
+    function setStored(n, v) { localStorage.setItem(key(n), v); }
+    function isChecked(n) { return getStored(n, "0") === "1"; }
+    function mapUrl(q) { return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`; }
+    function weatherUrl(c) { return `https://wttr.in/${encodeURIComponent(c)}?lang=zh`; }
+
+    function getTripDayIndex(d = new Date()) {
+      const s = new Date(`${START_DATE}T00:00:00`), e = new Date(`${END_DATE}T23:59:59`);
+      if (d < s) return 0;
+      if (d > e) return ITINERARY.length + 1;
+      return Math.floor((d - s) / 86400000) + 1;
     }
+    function weekday(ds) { return new Intl.DateTimeFormat("zh-CN",{weekday:"short"}).format(new Date(`${ds}T12:00:00`)); }
+    function formatDate(ds) { return new Intl.DateTimeFormat("zh-CN",{month:"long",day:"numeric"}).format(new Date(`${ds}T12:00:00`)); }
 
-    function mapPoint(item, index) {
-      const [lat, lng] = item.coord;
-      const offset = ((index % 5) - 2) * 0.035;
-      const clusterOffset = Math.floor(index / 5) * 0.018;
-      return [lat + offset, lng + clusterOffset];
-    }
+    /* ===== MAP ===== */
+    let map, markers = {}, activeDay = null;
 
-    function TripMap({ todayDay }) {
-      const mapEl = useRef(null);
-      const mapRef = useRef(null);
-      const markersRef = useRef({});
-      const [selectedDay, setSelectedDay] = useState(todayDay || 1);
-      const selected = itinerary.find(item => item.day === selectedDay) || itinerary[0];
+    function initMap() {
+      map = L.map("trip-map", { zoomControl: false, scrollWheelZoom: true }).setView([46.5, 8.5], window.innerWidth < 768 ? 5 : 6);
+      L.control.zoom({ position: "bottomright" }).addTo(map);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+        maxZoom: 18, attribution: "&copy; OpenStreetMap &copy; CARTO"
+      }).addTo(map);
 
-      useEffect(() => {
-        if (!mapEl.current || !window.L || mapRef.current) return;
+      const coords = ITINERARY.map(d => d.coord);
+      L.polyline(coords, { color: "rgba(160, 50, 45, 0.6)", weight: 3, dashArray: "8 6", lineCap: "round" }).addTo(map);
 
-        const map = L.map(mapEl.current, {
-          zoomControl: false,
-          scrollWheelZoom: false,
-          tap: true
-        }).setView([46.7, 8.2], window.innerWidth < 768 ? 5 : 6);
-
-        L.control.zoom({ position: "bottomright" }).addTo(map);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 18,
-          attribution: "&copy; OpenStreetMap"
-        }).addTo(map);
-
-        const routeLatLngs = itinerary.map((item, index) => mapPoint(item, index));
-        L.polyline(routeLatLngs, {
-          color: "#f97316",
-          weight: 4,
-          opacity: 0.82,
-          lineCap: "round"
-        }).addTo(map);
-
-        itinerary.forEach((item, index) => {
-          const themeKey = item.country.toLowerCase();
-          const point = mapPoint(item, index);
-          const icon = L.divIcon({
-            className: "",
-            html: `<div class="day-marker ${themeKey} ${item.day === todayDay ? "today" : ""}">D${item.day}</div>`,
-            iconSize: [38, 38],
-            iconAnchor: [19, 19],
-            popupAnchor: [0, -18]
-          });
-          const marker = L.marker(point, { icon })
-            .addTo(map)
-            .bindPopup(`<b>D${item.day} ${item.title}</b><br/>${cnDate(item.date)} · ${item.summary}`);
-          marker.on("click", () => setSelectedDay(item.day));
-          markersRef.current[item.day] = marker;
+      ITINERARY.forEach(day => {
+        const icon = L.divIcon({
+          className: "",
+          html: `<div class="map-marker ${day.country}">D${day.day}</div>`,
+          iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -18]
         });
+        const marker = L.marker(day.coord, { icon })
+          .addTo(map)
+          .bindPopup(`<strong>D${day.day} ${esc(day.title)}</strong><br>${formatDate(day.date)} · ${esc(day.city)}`);
+        marker.on("click", () => selectDay(day.day));
+        markers[day.day] = marker;
+      });
 
-        map.fitBounds(L.latLngBounds(routeLatLngs), { padding: [22, 22] });
-        mapRef.current = map;
-      }, []);
+      map.fitBounds(L.latLngBounds(coords), { padding: [30, 30] });
 
-      useEffect(() => {
-        const marker = markersRef.current[selectedDay];
-        const map = mapRef.current;
-        if (!marker || !map) return;
-        const latLng = marker.getLatLng();
-        map.flyTo(latLng, Math.max(map.getZoom(), window.innerWidth < 768 ? 6 : 7), { duration: 0.7 });
+      const btnsEl = $("#mapDayBtns");
+      btnsEl.innerHTML = ITINERARY.map(d => `<button class="map-day-btn" data-day="${d.day}">D${d.day}</button>`).join("");
+      btnsEl.addEventListener("click", e => {
+        const btn = e.target.closest("[data-day]");
+        if (btn) selectDay(Number(btn.dataset.day));
+      });
+
+      const todayIdx = getTripDayIndex();
+      if (todayIdx >= 1 && todayIdx <= 18) selectDay(todayIdx);
+      else selectDay(1);
+    }
+
+    function selectDay(dayNum) {
+      activeDay = dayNum;
+      $$(".map-day-btn").forEach(b => b.classList.toggle("active", Number(b.dataset.day) === dayNum));
+      $$(".map-marker").forEach(el => el.classList.remove("active"));
+
+      const marker = markers[dayNum];
+      if (marker) {
+        const el = marker.getElement();
+        if (el) el.querySelector(".map-marker").classList.add("active");
+        map.flyTo(marker.getLatLng(), Math.max(map.getZoom(), window.innerWidth < 768 ? 7 : 8), { duration: 0.6 });
         marker.openPopup();
-      }, [selectedDay]);
+      }
 
-      return (
-        <section className="mx-auto max-w-6xl px-4 pt-5">
-          <div className="glass rounded-[2rem] p-4">
-            <div className="mb-3 flex items-end justify-between gap-3">
-              <div>
-                <p className="text-sm text-cyan-200">Route Map</p>
-                <h2 className="text-2xl font-black text-white">欧洲行程地图</h2>
-              </div>
-              <p className="hidden text-right text-xs text-slate-400 sm:block">点击 D1-D18 节点，直接查看当天信息</p>
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-[1.35fr_0.85fr]">
-              <div>
-                <div id="trip-map" ref={mapEl} />
-                <div className="mt-3 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                  {itinerary.map(item => (
-                    <button
-                      key={item.day}
-                      onClick={() => setSelectedDay(item.day)}
-                      className={classNames("min-h-11 shrink-0 rounded-2xl px-3 text-sm font-black", item.day === selectedDay ? "bg-orange-400 text-slate-950" : "bg-white/10 text-white")}
-                    >
-                      D{item.day}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className={classNames("rounded-[1.5rem] border border-white/10 bg-gradient-to-br p-4", countryTheme[selected.country].bg)}>
-                <div className="mb-3 flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm text-slate-300">{cnDate(selected.date)} · {selected.city}</p>
-                    <h3 className="mt-1 text-2xl font-black text-white">D{selected.day} {selected.title}</h3>
-                  </div>
-                  <span className={classNames("rounded-full border px-2 py-1 text-xs", countryTheme[selected.country].badge)}>
-                    {countryTheme[selected.country].label}
-                  </span>
-                </div>
-                <p className="rounded-2xl bg-slate-950/35 p-3 text-sm leading-6 text-slate-100">{selected.summary}</p>
-                <div className="mt-4 space-y-4">
-                  <InfoBlock title="交通" icon="🚆" items={selected.transport} />
-                  {selected.stay && <InfoBlock title="住宿" icon="🏨" items={[selected.stay]} />}
-                  <div>
-                    <div className="mb-2 flex items-center gap-2 text-sm font-bold text-white"><Icon>📍</Icon>景点地图</div>
-                    <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto pr-1">
-                      {selected.spots.map(spot => (
-                        <a key={spot} href={mapUrl(`${spot} ${selected.city}`)} target="_blank" rel="noreferrer" className="min-h-11 rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100">
-                          {spot}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                  <InfoBlock title="提醒" icon="💡" items={selected.tips} />
-                </div>
-                <button onClick={() => document.getElementById(`day-${selected.day}`)?.scrollIntoView({ behavior: "smooth", block: "start" })} className="mt-4 min-h-11 w-full rounded-2xl bg-white/15 px-4 text-sm font-bold text-white">
-                  查看下方完整时间线
-                </button>
-              </div>
-            </div>
+      const day = ITINERARY.find(d => d.day === dayNum);
+      if (!day) return;
+      const detail = $("#mapDetail");
+      detail.style.display = "block";
+      detail.innerHTML = `
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px">
+          <div>
+            <span class="pill green">D${day.day}</span>
+            <span class="muted" style="margin-left:8px">${formatDate(day.date)} · ${weekday(day.date)}</span>
           </div>
-        </section>
-      );
-    }
-
-    function DayCard({ item, todayDay }) {
-      const [open, setOpen] = useState(item.day === todayDay || item.day <= 3);
-      const theme = countryTheme[item.country];
-      const isToday = item.day === todayDay;
-      return (
-        <article id={`day-${item.day}`} className={classNames("scroll-mt-28 overflow-hidden rounded-[1.75rem] border", isToday ? "border-orange-300/60 shadow-2xl shadow-orange-500/15" : "border-white/10")}>
-          <button onClick={() => setOpen(!open)} className={classNames("flex w-full items-start gap-3 bg-gradient-to-br p-4 text-left", theme.bg)}>
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-lg font-black text-white">D{item.day}</div>
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-lg font-black text-white">{item.title}</h3>
-                <span className={classNames("rounded-full border px-2 py-0.5 text-xs", theme.badge)}>{theme.label}</span>
-                {isToday && <span className="rounded-full bg-orange-300 px-2 py-0.5 text-xs font-bold text-slate-950">今日</span>}
-              </div>
-              <p className="mt-1 text-sm text-slate-300">{cnDate(item.date)} · {item.city}</p>
-              <p className="mt-2 text-sm leading-6 text-slate-200">{item.summary}</p>
-            </div>
-            <span className="pt-1 text-xl text-white/70">{open ? "−" : "+"}</span>
-          </button>
-          {open && (
-            <div className="space-y-4 bg-slate-950/45 p-4">
-              <InfoBlock title="交通" icon="🚆" items={item.transport} />
-              {item.stay && <InfoBlock title="住宿" icon="🏨" items={[item.stay]} />}
-              <div>
-                <div className="mb-2 flex items-center gap-2 text-sm font-bold text-white"><Icon>📍</Icon>景点地图</div>
-                <div className="flex flex-wrap gap-2">
-                  {item.spots.map(spot => (
-                    <a key={spot} href={mapUrl(`${spot} ${item.city}`)} target="_blank" rel="noreferrer" className="min-h-11 rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100">
-                      {spot}
-                    </a>
-                  ))}
-                </div>
-              </div>
-              <InfoBlock title="提醒" icon="💡" items={item.tips} />
-            </div>
-          )}
-        </article>
-      );
-    }
-
-    function InfoBlock({ title, icon, items }) {
-      return (
-        <div>
-          <div className="mb-2 flex items-center gap-2 text-sm font-bold text-white"><Icon>{icon}</Icon>{title}</div>
-          <ul className="space-y-2">
-            {items.map((x, idx) => <li key={idx} className="rounded-2xl bg-white/8 px-3 py-2 text-sm leading-6 text-slate-200">{x}</li>)}
-          </ul>
+          <span class="pill">${esc(day.city)}</span>
         </div>
-      );
+        <h3 style="margin:0 0 4px;font-size:24px">${esc(day.title)}</h3>
+        <p class="route" style="margin:0 0 16px">${esc(day.route)}</p>
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-title">交通</div>
+            ${day.transport.length ? `<ul class="transport-list">${day.transport.map(t => `<li class="transport-item"><span>${esc(t)}</span></li>`).join("")}</ul>` : `<div class="empty-note">今天以步行或市内交通为主。</div>`}
+          </div>
+          <div class="info-box">
+            <div class="info-title">住宿</div>
+            ${day.stay ? `<a class="link-card" target="_blank" href="${mapUrl(day.stay+' '+day.city)}"><strong>${esc(day.stay)}</strong><span class="muted">打开地图</span></a>` : `<div class="empty-note">原攻略未记录当晚住宿。</div>`}
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-title">景点</div>
+            <ul class="timeline">${day.places.map(p => `<li><a href="${mapUrl(p+' '+day.city)}" target="_blank" style="color:inherit">${esc(p)}</a></li>`).join("")}</ul>
+          </div>
+          <div class="info-box">
+            <div class="info-title">Tips</div>
+            ${day.tips.length ? `<ul class="tips">${day.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : `<div class="empty-note">暂无额外提示。</div>`}
+          </div>
+        </div>
+        ${day.tickets.length ? `<div style="margin-top:14px"><div class="info-title">票务链接</div><div class="ticket-grid">${day.tickets.map(t => `<a class="link-card" target="_blank" href="${t.url}"><strong>${esc(t.label)}</strong><span class="muted">打开官方预约</span></a>`).join("")}</div></div>` : ""}
+      `;
     }
 
-    function Timeline({ todayDay }) {
-      return (
-        <section id="timeline" className="mx-auto max-w-6xl px-4 pt-5">
-          <div className="mb-3 flex items-end justify-between">
-            <div>
-              <p className="text-sm text-orange-200">Daily Plan</p>
-              <h2 className="text-2xl font-black text-white">行程时间线</h2>
-            </div>
-            <button onClick={() => document.getElementById(`day-${todayDay || 1}`)?.scrollIntoView({ behavior: "smooth", block: "start" })} className="min-h-11 rounded-2xl border border-white/10 bg-white/10 px-3 text-sm font-bold text-white">
-              跳到今日
+    /* ===== ITINERARY ===== */
+    function renderItinerary() {
+      const todayIndex = getTripDayIndex();
+      $("#itineraryList").innerHTML = ITINERARY.map(day => {
+        const open = todayIndex === day.day || (todayIndex === 0 && day.day === 1);
+        const todayClass = todayIndex === day.day ? " today" : "";
+        const tickets = day.tickets.length
+          ? `<div class="ticket-grid">${day.tickets.map(t => `<a class="link-card" target="_blank" href="${t.url}"><strong>${esc(t.label)}</strong><span class="muted">打开官方预约</span></a>`).join("")}</div>`
+          : `<div class="empty-note">今天暂无必须提前打开的票务链接。</div>`;
+        return `
+          <article class="card day-card${todayClass}${open?" open":""}" data-day="${day.day}">
+            <button class="day-header" type="button" aria-expanded="${open}">
+              <div>
+                <div class="day-kicker">
+                  <span class="pill green">D${day.day}</span>
+                  <span>${formatDate(day.date)} · ${weekday(day.date)}</span>
+                  <span class="pill">${esc(day.city)}</span>
+                  ${day.tickets.length?'<span class="pill hot">必看票务</span>':""}
+                  ${todayIndex===day.day?'<span class="pill hot">今日</span>':""}
+                </div>
+                <div class="day-title"><h3>${esc(day.title)}</h3><span class="route">${esc(day.route)}</span></div>
+              </div>
+              <span class="chevron" aria-hidden="true">⌄</span>
             </button>
-          </div>
-          <div className="grid gap-4 lg:grid-cols-2">
-            {itinerary.map(item => <DayCard key={item.day} item={item} todayDay={todayDay} />)}
-          </div>
-        </section>
-      );
-    }
-
-    function CurrencyTool() {
-      const [rates, setRates] = useLocalStorage("travel-rates", currencyDefaults);
-      const [base, setBase] = useState({ currency: "CNY", amount: 100 });
-      const toCny = base.currency === "CNY" ? base.amount : base.amount * rates[base.currency];
-      const values = {
-        CNY: toCny,
-        EUR: toCny / rates.EUR,
-        CHF: toCny / rates.CHF
-      };
-      const update = (currency, amount) => setBase({ currency, amount: Number(amount) || 0 });
-      return (
-        <div className="space-y-3">
-          {["CNY", "EUR", "CHF"].map(cur => (
-            <label key={cur} className="flex items-center gap-3 rounded-2xl bg-white/10 p-3">
-              <span className="w-12 font-bold text-white">{cur}</span>
-              <input className="min-h-11 flex-1 rounded-xl border border-white/10 bg-slate-950/50 px-3 text-lg text-white outline-none" type="number" value={Number(values[cur]).toFixed(cur === "CNY" ? 0 : 2)} onChange={e => update(cur, e.target.value)} />
-            </label>
-          ))}
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <label className="rounded-2xl bg-white/10 p-3">1 EUR = <input className="mt-2 w-full rounded-xl bg-slate-950/50 px-3 py-2 text-white" type="number" step="0.01" value={rates.EUR} onChange={e => setRates({ ...rates, EUR: Number(e.target.value) || rates.EUR })} /> CNY</label>
-            <label className="rounded-2xl bg-white/10 p-3">1 CHF = <input className="mt-2 w-full rounded-xl bg-slate-950/50 px-3 py-2 text-white" type="number" step="0.01" value={rates.CHF} onChange={e => setRates({ ...rates, CHF: Number(e.target.value) || rates.CHF })} /> CNY</label>
-          </div>
-        </div>
-      );
-    }
-
-    function TimeTool() {
-      const [now, setNow] = useState(new Date());
-      useEffect(() => {
-        const id = setInterval(() => setNow(new Date()), 1000);
-        return () => clearInterval(id);
-      }, []);
-      const zones = [
-        ["北京", "Asia/Shanghai"],
-        ["罗马 / 米兰 / 威尼斯", "Europe/Rome"],
-        ["巴黎", "Europe/Paris"],
-        ["苏黎世 / 卢塞恩", "Europe/Zurich"]
-      ];
-      return (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {zones.map(([name, zone]) => (
-            <div key={zone} className="rounded-2xl bg-white/10 p-4">
-              <p className="text-sm text-slate-300">{name}</p>
-              <p className="mt-1 text-3xl font-black text-white">{now.toLocaleTimeString("zh-CN", { timeZone: zone, hour: "2-digit", minute: "2-digit" })}</p>
-              <p className="mt-1 text-xs text-slate-400">{now.toLocaleDateString("zh-CN", { timeZone: zone, month: "long", day: "numeric", weekday: "short" })}</p>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    function PhraseTool() {
-      const copy = async (text) => {
-        try { await navigator.clipboard.writeText(text); } catch {}
-      };
-      return (
-        <div className="space-y-3">
-          {phrases.map((p, idx) => (
-            <button key={idx} onClick={() => copy(`${p.zh}\nIT: ${p.it}\nFR: ${p.fr}\nDE: ${p.de}`)} className="w-full rounded-2xl bg-white/10 p-4 text-left">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <b className="text-white">{p.zh}</b>
-                <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-slate-300">{p.category}</span>
+            <div class="day-body">
+              <div class="info-grid">
+                <div class="info-box"><div class="info-title">交通</div>${day.transport.length?`<ul class="transport-list">${day.transport.map(i=>`<li class="transport-item"><span>${esc(i)}</span><button class="mini-btn copy-btn" type="button" data-copy="${esc(i)}">复制</button></li>`).join("")}</ul>`:`<div class="empty-note">今天以步行或市内交通为主。</div>`}</div>
+                <div class="info-box"><div class="info-title">住宿</div>${day.stay?`<a class="link-card" target="_blank" href="${mapUrl(day.stay+' '+day.city)}"><strong>${esc(day.stay)}</strong><span class="muted">打开地图</span></a>`:`<div class="empty-note">原攻略未记录当晚住宿。</div>`}</div>
               </div>
-              <p className="text-sm leading-6 text-slate-300">IT {p.it}</p>
-              <p className="text-sm leading-6 text-slate-300">FR {p.fr}</p>
-              <p className="text-sm leading-6 text-slate-300">DE {p.de}</p>
-            </button>
-          ))}
-        </div>
-      );
-    }
-
-    function BookingTool() {
-      const [done, setDone] = useLocalStorage("travel-bookings", {});
-      return (
-        <div className="space-y-3">
-          {bookingList.map(item => (
-            <div key={item.key} className="rounded-2xl bg-white/10 p-4">
-              <label className="flex items-start gap-3">
-                <input type="checkbox" checked={!!done[item.key]} onChange={e => setDone({ ...done, [item.key]: e.target.checked })} className="mt-1 h-5 w-5 accent-orange-400" />
-                <span className="flex-1">
-                  <b className={classNames("block", done[item.key] ? "text-slate-400 line-through" : "text-white")}>{item.name}</b>
-                  <span className="mt-1 block text-sm text-slate-300">{item.when} · {item.lead}</span>
-                  <a href={item.url} target="_blank" rel="noreferrer" className="mt-3 inline-flex min-h-11 items-center rounded-2xl bg-orange-400 px-4 text-sm font-bold text-slate-950">打开官网</a>
-                </span>
-              </label>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    function EmergencyTool() {
-      return (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {emergency.map(item => (
-            <a key={item.name} href={`tel:${item.number}`} className="rounded-2xl bg-white/10 p-4">
-              <p className="text-sm text-slate-300">{item.name}</p>
-              <p className="mt-1 text-2xl font-black text-white">{item.number}</p>
-              <p className="mt-1 text-xs text-slate-400">{item.note}</p>
-            </a>
-          ))}
-        </div>
-      );
-    }
-
-    function TipsTool() {
-      return (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {tips.map(([title, body]) => (
-            <div key={title} className="rounded-2xl bg-white/10 p-4">
-              <b className="text-white">{title}</b>
-              <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    function LinksTool() {
-      return (
-        <div className="space-y-4">
-          {quickLinks.map(group => (
-            <div key={group.group}>
-              <h4 className="mb-2 font-bold text-white">{group.group}</h4>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {group.items.map(([name, url]) => (
-                  <a key={name} href={url} target="_blank" rel="noreferrer" className="min-h-11 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-slate-100">{name}</a>
-                ))}
+              <div class="info-grid">
+                <div class="info-box"><div class="info-title">路线时间线</div><ul class="timeline">${day.places.map(p=>`<li><a href="${mapUrl(p+' '+day.city)}" target="_blank" style="color:inherit">${esc(p)}</a></li>`).join("")}</ul></div>
+                <div class="info-box"><div class="info-title">打卡清单</div><ul class="checklist">${day.checklist.map((item,i)=>renderCheckRow(`checked:d${day.day}:${i}:${slug(item)}`,item,day.city)).join("")}</ul></div>
+              </div>
+              <div class="info-grid">
+                <div class="info-box"><div class="info-title">Tips</div>${day.tips.length?`<ul class="tips">${day.tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`:`<div class="empty-note">暂无额外提示。</div>`}</div>
+                <div class="info-box"><div class="info-title">票务链接</div>${tickets}</div>
               </div>
             </div>
-          ))}
-        </div>
-      );
+          </article>`;
+      }).join("");
     }
 
-    function ToolsPanel() {
-      const tabs = [
-        ["currency", "汇率", "💱", <CurrencyTool />],
-        ["time", "时钟", "🕘", <TimeTool />],
-        ["phrases", "用语", "💬", <PhraseTool />],
-        ["booking", "抢票", "🎟️", <BookingTool />],
-        ["emergency", "紧急", "🆘", <EmergencyTool />],
-        ["tips", "常识", "🧭", <TipsTool />],
-        ["links", "链接", "🔗", <LinksTool />]
-      ];
-      const [active, setActive] = useState("currency");
-      const current = tabs.find(t => t[0] === active);
-      return (
-        <>
-          <section id="tools" className="mx-auto max-w-6xl px-4 pt-5">
-            <div className="glass rounded-[2rem] p-4">
-              <div className="mb-4 flex items-end justify-between gap-3">
-                <div>
-                  <p className="text-sm text-cyan-200">Travel Tools</p>
-                  <h2 className="text-2xl font-black text-white">出行工具箱</h2>
-                </div>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-slate-300">{current?.[1]}</span>
-              </div>
-              <div className="mb-4 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                {tabs.map(([id, label, icon]) => (
-                  <button key={id} onClick={() => setActive(id)} className={classNames("min-h-11 shrink-0 rounded-2xl px-4 text-sm font-bold", active === id ? "bg-orange-400 text-slate-950" : "bg-white/10 text-white")}>
-                    {icon} {label}
-                  </button>
-                ))}
-              </div>
-              {current?.[3]}
-            </div>
-          </section>
-          <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-slate-950/85 px-2 pt-2 backdrop-blur-xl tab-safe md:hidden">
-            <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
-              {tabs.slice(0, 5).map(([id, label, icon]) => (
-                <button key={id} onClick={() => { setActive(id); document.getElementById("tools")?.scrollIntoView({ behavior: "smooth", block: "start" }); }} className={classNames("min-h-12 rounded-2xl text-xs font-bold", active === id ? "bg-orange-400 text-slate-950" : "text-slate-200")}>
-                  <span className="block text-base">{icon}</span>{label}
-                </button>
-              ))}
-            </div>
-          </nav>
-        </>
-      );
+    function renderCheckRow(sn, label, city) {
+      const checked = isChecked(sn);
+      return `<li class="check-row"><input type="checkbox" data-check="${esc(sn)}" ${checked?"checked":""} aria-label="${esc(label)}"><span class="${checked?"done":""}">${esc(label)}</span><a class="mini-btn" target="_blank" href="${mapUrl(label+' '+city)}">地图</a></li>`;
     }
 
-    function Footer() {
-      return (
-        <footer className="mx-auto max-w-6xl px-4 pb-8 pt-8 text-center text-xs leading-6 text-slate-400">
-          <p>建议出发前打开一次页面，让 CDN 资源进入浏览器缓存；同时把网页添加到手机主屏幕。</p>
-          <p className="mt-1">所有行程数据来自本地 itinerary.md，链接会跳转到外部官网或 Google Maps。</p>
-        </footer>
-      );
+    function renderWeather() {
+      $("#weatherGrid").innerHTML = WEATHER_CITIES.map(([c,l])=>`<a class="link-card" target="_blank" href="${weatherUrl(c)}"><strong>${esc(l)}</strong><span class="muted">${esc(c)} 实时天气</span></a>`).join("");
     }
 
-    function App() {
-      const [dark, setDark] = useLocalStorage("travel-dark", true);
-      const todayDay = getTodayDay();
-      useEffect(() => {
-        document.documentElement.classList.toggle("dark", dark);
-        document.body.classList.toggle("light", !dark);
-      }, [dark]);
-      useEffect(() => {
-        if (todayDay) {
-          setTimeout(() => document.getElementById(`day-${todayDay}`)?.scrollIntoView({ behavior: "smooth", block: "start" }), 600);
-        }
-      }, []);
-      return (
-        <div className="bottom-safe">
-          <Header todayDay={todayDay} dark={dark} setDark={setDark} />
-          <Hero todayDay={todayDay} />
-          <TripMap todayDay={todayDay} />
-          <Timeline todayDay={todayDay} />
-          <ToolsPanel />
-          <Footer />
-        </div>
-      );
+    function renderLinks() {
+      $("#linksList").innerHTML = LINK_GROUPS.map(g=>`<article class="card link-group" style="margin-bottom:12px"><h3>${esc(g.title)}</h3><div class="link-grid">${g.links.map(([t,d,u])=>`<a class="link-card" target="_blank" href="${u}"><strong>${esc(t)}</strong><span class="muted">${esc(d)}</span></a>`).join("")}</div></article>`).join("");
     }
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    function renderPacking() {
+      $("#packList").innerHTML = PACKING.map(([g,items])=>`<article class="card pack-card"><h3>${esc(g)}</h3><ul class="checklist">${items.map((item,i)=>{const sn=`pack:${slug(g)}:${i}:${slug(item)}`;const c=isChecked(sn);return`<li class="check-row"><input type="checkbox" data-check="${esc(sn)}" ${c?"checked":""}><span class="${c?"done":""}">${esc(item)}</span></li>`;}).join("")}</ul></article>`).join("");
+    }
+
+    function renderSos() {
+      $("#sosList").innerHTML = SOS_GROUPS.map(g=>`<article class="card sos-card"><h3>${esc(g.title)}</h3>${g.items?`<ul class="contact-list">${g.items.map(([l,p])=>`<li><a class="link-card" href="tel:${p}"><strong>${esc(l)}</strong><span class="muted">${esc(p)}</span></a></li>`).join("")}</ul>`:`<ul class="plain-list">${g.notes.map(n=>`<li class="empty-note">${esc(n)}</li>`).join("")}</ul>`}</article>`).join("");
+      $("#phraseTable").innerHTML = `<table><thead><tr><th>中文</th><th>English</th><th>Italiano</th><th>Français</th><th>Deutsch</th></tr></thead><tbody>${PHRASES.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+    }
+
+    function updateTripStatus() {
+      const now = new Date(), start = new Date(`${START_DATE}T00:00:00`), end = new Date(`${END_DATE}T23:59:59`);
+      const state = $("#tripState"), idx = getTripDayIndex(now);
+      if (now < start) state.textContent = `距出发 ${Math.ceil((start-now)/86400000)} 天`;
+      else if (now > end) state.textContent = "旅程已完成";
+      else { const d = ITINERARY[Math.min(ITINERARY.length-1, idx-1)]; state.textContent = `行程中 · D${idx} ${d.city}`; }
+    }
+
+    function updateProgress() {
+      let done = 0;
+      ITINERARY.forEach(day => { if (day.checklist.every((item,i) => isChecked(`checked:d${day.day}:${i}:${slug(item)}`))) done++; });
+      $("#progressText").textContent = `${done} / ${ITINERARY.length} 天`;
+      $("#progressFill").style.width = `${Math.round((done/ITINERARY.length)*100)}%`;
+    }
+
+    function wireTabs() {
+      $$(".nav-btn").forEach(btn => btn.addEventListener("click", () => {
+        const tab = btn.dataset.tab;
+        $$(".nav-btn").forEach(b => b.classList.toggle("active", b === btn));
+        $$(".section").forEach(s => s.classList.toggle("active", s.id === `tab-${tab}`));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (tab === "map" && map) setTimeout(() => map.invalidateSize(), 100);
+      }));
+    }
+
+    function wireItinerary() {
+      $("#itineraryList").addEventListener("click", async e => {
+        const header = e.target.closest(".day-header");
+        if (header) { const card = header.closest(".day-card"); const open = !card.classList.contains("open"); card.classList.toggle("open", open); header.setAttribute("aria-expanded", String(open)); return; }
+        const copy = e.target.closest(".copy-btn");
+        if (copy) { try { await navigator.clipboard.writeText(copy.dataset.copy||""); copy.textContent="已复制"; setTimeout(()=>copy.textContent="复制",1200); } catch { copy.textContent="失败"; setTimeout(()=>copy.textContent="复制",1200); } }
+      });
+      $("#expandAll").addEventListener("click", () => $$(".day-card").forEach(c => { c.classList.add("open"); $(".day-header",c).setAttribute("aria-expanded","true"); }));
+      $("#collapseAll").addEventListener("click", () => $$(".day-card").forEach(c => { c.classList.remove("open"); $(".day-header",c).setAttribute("aria-expanded","false"); }));
+      $("#resetChecks").addEventListener("click", () => { if(!confirm("确认重置所有每日打卡？"))return; Object.keys(localStorage).forEach(k=>{if(k.startsWith(key("checked:")))localStorage.removeItem(k);}); renderItinerary(); updateProgress(); });
+    }
+
+    function wireChecks() {
+      document.body.addEventListener("change", e => {
+        const input = e.target.closest("input[data-check]");
+        if (!input) return;
+        setStored(input.dataset.check, input.checked ? "1" : "0");
+        const row = input.closest(".check-row"), label = row && row.querySelector("span");
+        if (label) label.classList.toggle("done", input.checked);
+        updateProgress();
+      });
+    }
+
+    function wireCurrency() {
+      const eur=$("#eurInput"), chf=$("#chfInput"), cny=$("#cnyInput"), rateEur=$("#rateEurCny"), rateChf=$("#rateChfCny");
+      let updating = false;
+      rateEur.value = getStored("rate:eurCny","7.80");
+      rateChf.value = getStored("rate:chfCny","8.40");
+      function n(el,fb=0){ const v=parseFloat(String(el.value).replace(",",".")); return isFinite(v)?v:fb; }
+      function fmt(v){ return isFinite(v)?String(Math.round(v*100)/100):""; }
+      function convert(src){
+        if(updating)return; updating=true;
+        const er=n(rateEur,7.8), cr=n(rateChf,8.4);
+        setStored("rate:eurCny",String(er)); setStored("rate:chfCny",String(cr));
+        if(src===eur){const c=n(eur)*er;cny.value=fmt(c);chf.value=fmt(c/cr);}
+        else if(src===chf){const c=n(chf)*cr;cny.value=fmt(c);eur.value=fmt(c/er);}
+        else{const c=n(cny);eur.value=fmt(c/er);chf.value=fmt(c/cr);}
+        updating=false;
+      }
+      [eur,chf,cny].forEach(el=>el.addEventListener("input",()=>convert(el)));
+      [rateEur,rateChf].forEach(el=>el.addEventListener("input",()=>convert(cny.value?cny:eur)));
+    }
+
+    function wireClocks() {
+      const tf = zone => new Intl.DateTimeFormat("zh-CN",{timeZone:zone,hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+      function tick(){
+        $("#cnClock").textContent = tf("Asia/Shanghai").format(new Date());
+        $("#euClock").textContent = tf("Europe/Rome").format(new Date());
+        const h = Number(new Intl.DateTimeFormat("en-US",{timeZone:"Europe/Rome",hour:"2-digit",hour12:false}).formatToParts(new Date()).find(p=>p.type==="hour").value);
+        $("#timeHint").textContent = h<6?"欧洲现在是深夜，适合查票但不适合打电话。":h<11?"欧洲现在是上午，适合赶早场景点。":h<17?"欧洲现在是下午，注意热门景点排队和山区天气。":h<22?"欧洲现在是傍晚到夜间，适合日落点和返程确认。":"欧洲现在已入夜，确认末班车和回住宿路线。";
+      }
+      tick(); setInterval(tick,1000);
+    }
+
+    function wireCalculator() {
+      const bill=$("#billInput"), people=$("#peopleInput"), tip=$("#tipInput"), out=$("#perPerson");
+      function calc(){ const a=Math.max(0,parseFloat(bill.value)||0), c=Math.max(1,parseInt(people.value,10)||1), t=Math.max(0,parseFloat(tip.value)||0)/100; out.textContent=`€${((a*(1+t))/c).toFixed(2)}`; }
+      [bill,people,tip].forEach(el=>el.addEventListener("input",calc)); calc();
+    }
+
+    function wirePacking() {
+      $("#resetPack").addEventListener("click",()=>{ if(!confirm("确认重置所有行李清单勾选？"))return; Object.keys(localStorage).forEach(k=>{if(k.startsWith(key("pack:")))localStorage.removeItem(k);}); renderPacking(); });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initMap();
+      renderItinerary();
+      renderWeather();
+      renderLinks();
+      renderPacking();
+      renderSos();
+      updateTripStatus();
+      updateProgress();
+      wireTabs();
+      wireItinerary();
+      wireChecks();
+      wireCurrency();
+      wireClocks();
+      wireCalculator();
+      wirePacking();
+    });
   </script>
 </body>
 </html>
