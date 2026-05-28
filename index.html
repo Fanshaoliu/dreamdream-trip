@@ -716,6 +716,9 @@
       if (!day) return;
       const detail = $("#mapDetail");
       detail.style.display = "block";
+      const wCity = getWeatherCity(day.city);
+      const wData = window._weatherCache && window._weatherCache[wCity];
+      const weatherPill = wData ? `<span class="pill weather-inline">${wData.temp}°C ${esc(wData.desc)}</span>` : "";
       const tickets = day.tickets.length
         ? `<div class="ticket-grid">${day.tickets.map(t => `<a class="link-card" target="_blank" href="${t.url}"><strong>${esc(t.label)}</strong><span class="muted">打开官方预约</span></a>`).join("")}</div>`
         : `<div class="empty-note">今天暂无必须提前打开的票务链接。</div>`;
@@ -724,6 +727,7 @@
           <div>
             <span class="pill green">D${day.day}</span>
             <span class="muted" style="margin-left:8px">${formatDate(day.date)} · ${weekday(day.date)}</span>
+            ${weatherPill}
             ${day.tickets.length ? '<span class="pill hot">必看票务</span>' : ""}
           </div>
           <span class="pill">${esc(day.city)}</span>
@@ -1066,7 +1070,7 @@
     }
 
     async function fetchDayWeathers() {
-      const cache = {};
+      const cache = window._weatherCache = {};
       for (const day of ITINERARY) {
         const wCity = getWeatherCity(day.city);
         if (cache[wCity]) {
@@ -1074,12 +1078,12 @@
           continue;
         }
         try {
-          const resp = await fetch(`https://wttr.in/${encodeURIComponent(wCity)}?format=j1`, { signal: AbortSignal.timeout(8000) });
+          const resp = await fetch(`https://wttr.in/${encodeURIComponent(wCity)}?format=j1&lang=zh`, { signal: AbortSignal.timeout(12000) });
           if (!resp.ok) continue;
           const data = await resp.json();
           const cur = data.current_condition[0];
           const temp = cur.temp_C;
-          const desc = cur.lang_zh && cur.lang_zh[0] ? cur.lang_zh[0].value : cur.weatherDesc[0].value;
+          const desc = (cur.lang_zh && cur.lang_zh[0] && cur.lang_zh[0].value) || (cur.weatherDesc && cur.weatherDesc[0] && cur.weatherDesc[0].value) || "";
           const humidity = cur.humidity;
           cache[wCity] = { temp, desc, humidity };
           injectWeather(day.day, temp, desc, humidity);
