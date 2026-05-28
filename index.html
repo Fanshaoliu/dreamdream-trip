@@ -269,6 +269,7 @@
     <main>
       <!-- Map Section -->
       <section id="tab-map" class="section active" aria-labelledby="mapTitle">
+        <div id="todayWeatherBanner" style="display:none;margin-bottom:14px;border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--card);box-shadow:var(--shadow)"></div>
         <div class="section-head">
           <div>
             <h2 id="mapTitle">行程地图</h2>
@@ -694,6 +695,11 @@
       const todayIdx = getTripDayIndex();
       if (todayIdx >= 1 && todayIdx <= 18) selectDay(todayIdx);
       else selectDay(1);
+
+      setTimeout(() => {
+        const activeBtn = btnsEl.querySelector(".map-day-btn.active");
+        if (activeBtn) activeBtn.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+      }, 300);
     }
 
     function selectDay(dayNum) {
@@ -1010,6 +1016,41 @@
       }
     }
 
+    async function fetchTodayWeather() {
+      const todayIdx = getTripDayIndex();
+      if (todayIdx < 1 || todayIdx > ITINERARY.length) return;
+      const day = ITINERARY[todayIdx - 1];
+      const banner = $("#todayWeatherBanner");
+      const cityQuery = day.city.split("/")[0].trim().split(" ")[0];
+      try {
+        const resp = await fetch(`https://wttr.in/${encodeURIComponent(cityQuery)}?format=j1`, { signal: AbortSignal.timeout(8000) });
+        if (!resp.ok) throw new Error("weather fetch failed");
+        const data = await resp.json();
+        const cur = data.current_condition[0];
+        const temp = cur.temp_C;
+        const feels = cur.FeelsLikeC;
+        const desc = cur.lang_zh && cur.lang_zh[0] ? cur.lang_zh[0].value : cur.weatherDesc[0].value;
+        const humidity = cur.humidity;
+        const wind = cur.windspeedKmph;
+        banner.style.display = "block";
+        banner.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">D${day.day} 今日天气 · ${esc(day.city)}</div>
+              <div style="font-size:28px;font-weight:900;letter-spacing:-0.02em">${temp}°C <span style="font-size:16px;font-weight:500;color:var(--muted)">${esc(desc)}</span></div>
+            </div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap">
+              <div class="clock"><span class="muted">体感</span><strong>${feels}°C</strong></div>
+              <div class="clock"><span class="muted">湿度</span><strong>${humidity}%</strong></div>
+              <div class="clock"><span class="muted">风速</span><strong>${wind} km/h</strong></div>
+            </div>
+          </div>
+        `;
+      } catch {
+        banner.style.display = "none";
+      }
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       initMap();
       renderItinerary();
@@ -1027,6 +1068,7 @@
       wireCalculator();
       wirePacking();
       wireTranslator();
+      fetchTodayWeather();
     });
   </script>
 </body>
