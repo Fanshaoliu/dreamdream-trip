@@ -694,7 +694,13 @@
       setTimeout(() => {
         const activeBtn = btnsEl.querySelector(".map-day-btn.active");
         if (activeBtn) activeBtn.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
-      }, 300);
+        const detail = $("#mapDetail");
+        if (detail && detail.style.display !== "none") {
+          setTimeout(() => detail.scrollIntoView({ behavior: "smooth", block: "start" }), 200);
+        } else {
+          scrollToSection("map");
+        }
+      }, 400);
     }
 
     function selectDay(dayNum) {
@@ -854,13 +860,33 @@
       $("#progressFill").style.width = `${Math.round((done / ITINERARY.length) * 100)}%`;
     }
 
+    function scrollToSection(tab) {
+      const section = $(`#tab-${tab}`);
+      if (section) {
+        setTimeout(() => {
+          const rect = section.getBoundingClientRect();
+          const offset = window.scrollY + rect.top - 10;
+          window.scrollTo({ top: offset, behavior: "smooth" });
+        }, 50);
+      }
+    }
+
     function wireTabs() {
       $$(".nav-btn").forEach(btn => btn.addEventListener("click", () => {
         const tab = btn.dataset.tab;
         $$(".nav-btn").forEach(b => b.classList.toggle("active", b === btn));
         $$(".section").forEach(s => s.classList.toggle("active", s.id === `tab-${tab}`));
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        if (tab === "map" && map) setTimeout(() => map.invalidateSize(), 100);
+        if (tab === "map" && map) {
+          setTimeout(() => map.invalidateSize(), 100);
+          const detail = $("#mapDetail");
+          if (detail && detail.style.display !== "none") {
+            setTimeout(() => detail.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+          } else {
+            scrollToSection(tab);
+          }
+        } else {
+          scrollToSection(tab);
+        }
       }));
     }
 
@@ -1030,7 +1056,11 @@
       $$(".section").forEach(s => s.classList.toggle("active", s.id === "tab-map"));
       selectDay(dayNum);
       if (map) setTimeout(() => map.invalidateSize(), 100);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => {
+        const detail = $("#mapDetail");
+        if (detail && detail.style.display !== "none") detail.scrollIntoView({ behavior: "smooth", block: "start" });
+        else scrollToSection("map");
+      }, 150);
     }
 
     function initHeroDays() {
