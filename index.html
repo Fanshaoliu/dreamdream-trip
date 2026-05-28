@@ -97,8 +97,13 @@
     .stat { border: 1px solid rgba(255, 255, 255, 0.24); border-radius: 18px; padding: 14px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); }
     .stat-label { display: block; color: rgba(255, 248, 237, 0.75); font-size: 12px; }
     .stat-value { display: block; margin-top: 4px; font-size: 18px; font-weight: 750; }
-    .progress { width: 100%; height: 10px; margin-top: 10px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, 0.18); }
+    .progress { width: 100%; height: 6px; margin-top: 8px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, 0.18); }
     .progress span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ffe0a6, #fff6da); transition: width 0.35s ease; }
+    .hero-days { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+    .hero-day-dot { width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2); color: #fff; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s, background 0.15s; padding: 0; }
+    .hero-day-dot:hover { transform: scale(1.2); background: rgba(255,255,255,0.45); }
+    .hero-day-dot.current { background: #ffe0a6; color: #5c1f1b; box-shadow: 0 0 6px rgba(255,224,166,0.7); }
+    .hero-day-dot.done { background: rgba(255,255,255,0.5); color: #5c1f1b; }
 
     /* Sections & Tabs */
     .section { display: none; margin-top: 18px; }
@@ -131,6 +136,7 @@
     .pill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px; background: rgba(201, 164, 92, 0.08); color: var(--muted); font-size: 12px; white-space: nowrap; }
     .pill.hot { border-color: rgba(201, 164, 92, 0.48); background: rgba(201, 164, 92, 0.2); color: var(--primary-dark); font-weight: 700; }
     .pill.green { background: rgba(94, 117, 83, 0.12); color: var(--green); }
+    .pill.weather-inline { background: rgba(70,130,180,0.1); border-color: rgba(70,130,180,0.3); color: #2e7dab; font-weight: 600; }
 
     .day-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; margin-top: 8px; }
     .day-title h3 { margin: 0; font-size: 22px; }
@@ -259,9 +265,9 @@
           <span class="stat-value">米兰 → 巴黎 → 瑞士 → 米兰</span>
         </div>
         <div class="stat">
-          <span class="stat-label">打卡进度</span>
-          <span class="stat-value" id="progressText">0 / 18 天</span>
+          <span class="stat-label">打卡进度 <span id="progressText" style="opacity:0.75;font-weight:400;font-size:11px">0/18</span></span>
           <div class="progress" aria-hidden="true"><span id="progressFill"></span></div>
+          <div class="hero-days" id="heroDays"></div>
         </div>
       </div>
     </header>
@@ -269,7 +275,6 @@
     <main>
       <!-- Map Section -->
       <section id="tab-map" class="section active" aria-labelledby="mapTitle">
-        <div id="todayWeatherBanner" style="display:none;margin-bottom:14px;border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--card);box-shadow:var(--shadow)"></div>
         <div class="section-head">
           <div>
             <h2 id="mapTitle">行程地图</h2>
@@ -843,7 +848,7 @@
     function updateProgress() {
       let done = 0;
       ITINERARY.forEach(day => { if (day.checklist.every((item,i) => isChecked(`checked:d${day.day}:${i}:${slug(item)}`))) done++; });
-      $("#progressText").textContent = `${done} / ${ITINERARY.length} 天`;
+      $("#progressText").textContent = `${done}/${ITINERARY.length}`;
       $("#progressFill").style.width = `${Math.round((done/ITINERARY.length)*100)}%`;
     }
 
@@ -1018,48 +1023,69 @@
       }
     }
 
-    async function fetchTodayWeather() {
+    function initHeroDays() {
       const todayIdx = getTripDayIndex();
-      let day, label;
-      if (todayIdx >= 1 && todayIdx <= ITINERARY.length) {
-        day = ITINERARY[todayIdx - 1];
-        label = `D${day.day} 今日天气`;
-      } else if (todayIdx === 0) {
-        day = ITINERARY[0];
-        label = `出发地天气预览 · D1`;
-      } else {
-        day = ITINERARY[ITINERARY.length - 1];
-        label = `旅途已结束 · D${day.day}`;
+      const el = $("#heroDays");
+      el.innerHTML = ITINERARY.map(day => {
+        let cls = "hero-day-dot";
+        if (todayIdx === day.day) cls += " current";
+        else if (day.checklist.every((item, i) => isChecked(`checked:d${day.day}:${i}:${slug(item)}`))) cls += " done";
+        return `<button class="${cls}" data-day="${day.day}" title="D${day.day} ${day.city}">${day.day}</button>`;
+      }).join("");
+      el.addEventListener("click", e => {
+        const btn = e.target.closest("[data-day]");
+        if (!btn) return;
+        const dayNum = Number(btn.dataset.day);
+        $$(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === "map"));
+        $$(".section").forEach(s => s.classList.toggle("active", s.id === "tab-map"));
+        selectDay(dayNum);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+
+    async function fetchDayWeathers() {
+      const seen = new Set();
+      for (const day of ITINERARY) {
+        const cityQuery = day.city.split("/")[0].trim().split(" ")[0];
+        if (seen.has(cityQuery)) {
+          const prev = ITINERARY.find(d => d.city.split("/")[0].trim().split(" ")[0] === cityQuery && d !== day);
+          if (prev) { copyWeatherToCard(day.day, prev.day); }
+          continue;
+        }
+        seen.add(cityQuery);
+        try {
+          const resp = await fetch(`https://wttr.in/${encodeURIComponent(cityQuery)}?format=j1`, { signal: AbortSignal.timeout(8000) });
+          if (!resp.ok) continue;
+          const data = await resp.json();
+          const cur = data.current_condition[0];
+          const temp = cur.temp_C;
+          const desc = cur.lang_zh && cur.lang_zh[0] ? cur.lang_zh[0].value : cur.weatherDesc[0].value;
+          const humidity = cur.humidity;
+          injectWeather(day.day, temp, desc, humidity);
+          ITINERARY.filter(d => d !== day && d.city.split("/")[0].trim().split(" ")[0] === cityQuery)
+            .forEach(d => injectWeather(d.day, temp, desc, humidity));
+        } catch { /* skip this city */ }
       }
-      const banner = $("#todayWeatherBanner");
-      const cityQuery = day.city.split("/")[0].trim().split(" ")[0];
-      try {
-        const resp = await fetch(`https://wttr.in/${encodeURIComponent(cityQuery)}?format=j1`, { signal: AbortSignal.timeout(8000) });
-        if (!resp.ok) throw new Error("weather fetch failed");
-        const data = await resp.json();
-        const cur = data.current_condition[0];
-        const temp = cur.temp_C;
-        const feels = cur.FeelsLikeC;
-        const desc = cur.lang_zh && cur.lang_zh[0] ? cur.lang_zh[0].value : cur.weatherDesc[0].value;
-        const humidity = cur.humidity;
-        const wind = cur.windspeedKmph;
-        banner.style.display = "block";
-        banner.innerHTML = `
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-            <div>
-              <div style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">${label} · ${esc(day.city)}</div>
-              <div style="font-size:28px;font-weight:900;letter-spacing:-0.02em">${temp}°C <span style="font-size:16px;font-weight:500;color:var(--muted)">${esc(desc)}</span></div>
-            </div>
-            <div style="display:flex;gap:14px;flex-wrap:wrap">
-              <div class="clock"><span class="muted">体感</span><strong>${feels}°C</strong></div>
-              <div class="clock"><span class="muted">湿度</span><strong>${humidity}%</strong></div>
-              <div class="clock"><span class="muted">风速</span><strong>${wind} km/h</strong></div>
-            </div>
-          </div>
-        `;
-      } catch {
-        banner.style.display = "none";
+    }
+
+    function injectWeather(dayNum, temp, desc, humidity) {
+      const card = $(`.day-card[data-day="${dayNum}"]`);
+      if (!card || card.querySelector(".weather-inline")) return;
+      const header = card.querySelector(".day-kicker");
+      if (header) {
+        const badge = document.createElement("span");
+        badge.className = "pill weather-inline";
+        badge.textContent = `${temp}°C ${desc}`;
+        badge.title = `湿度 ${humidity}%`;
+        header.appendChild(badge);
       }
+    }
+
+    function copyWeatherToCard(targetDay, srcDay) {
+      const srcCard = $(`.day-card[data-day="${srcDay}"]`);
+      if (!srcCard) return;
+      const badge = srcCard.querySelector(".weather-inline");
+      if (badge) injectWeather(targetDay, badge.textContent.split("°C")[0], badge.textContent.split("°C ")[1] || "", badge.title.replace("湿度 ","").replace("%",""));
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -1079,7 +1105,8 @@
       wireCalculator();
       wirePacking();
       wireTranslator();
-      fetchTodayWeather();
+      initHeroDays();
+      fetchDayWeathers();
     });
   </script>
 </body>
