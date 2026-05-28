@@ -1020,8 +1020,17 @@
 
     async function fetchTodayWeather() {
       const todayIdx = getTripDayIndex();
-      if (todayIdx < 1 || todayIdx > ITINERARY.length) return;
-      const day = ITINERARY[todayIdx - 1];
+      let day, label;
+      if (todayIdx >= 1 && todayIdx <= ITINERARY.length) {
+        day = ITINERARY[todayIdx - 1];
+        label = `D${day.day} 今日天气`;
+      } else if (todayIdx === 0) {
+        day = ITINERARY[0];
+        label = `出发地天气预览 · D1`;
+      } else {
+        day = ITINERARY[ITINERARY.length - 1];
+        label = `旅途已结束 · D${day.day}`;
+      }
       const banner = $("#todayWeatherBanner");
       const cityQuery = day.city.split("/")[0].trim().split(" ")[0];
       try {
@@ -1038,7 +1047,7 @@
         banner.innerHTML = `
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
             <div>
-              <div style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">D${day.day} 今日天气 · ${esc(day.city)}</div>
+              <div style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">${label} · ${esc(day.city)}</div>
               <div style="font-size:28px;font-weight:900;letter-spacing:-0.02em">${temp}°C <span style="font-size:16px;font-weight:500;color:var(--muted)">${esc(desc)}</span></div>
             </div>
             <div style="display:flex;gap:14px;flex-wrap:wrap">
