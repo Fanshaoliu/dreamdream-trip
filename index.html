@@ -657,11 +657,15 @@
       if (!day) return;
       const detail = $("#mapDetail");
       detail.style.display = "block";
+      const tickets = day.tickets.length
+        ? `<div class="ticket-grid">${day.tickets.map(t => `<a class="link-card" target="_blank" href="${t.url}"><strong>${esc(t.label)}</strong><span class="muted">打开官方预约</span></a>`).join("")}</div>`
+        : `<div class="empty-note">今天暂无必须提前打开的票务链接。</div>`;
       detail.innerHTML = `
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px">
           <div>
             <span class="pill green">D${day.day}</span>
             <span class="muted" style="margin-left:8px">${formatDate(day.date)} · ${weekday(day.date)}</span>
+            ${day.tickets.length ? '<span class="pill hot">必看票务</span>' : ""}
           </div>
           <span class="pill">${esc(day.city)}</span>
         </div>
@@ -670,7 +674,7 @@
         <div class="info-grid">
           <div class="info-box">
             <div class="info-title">交通</div>
-            ${day.transport.length ? `<ul class="transport-list">${day.transport.map(t => `<li class="transport-item"><span>${esc(t)}</span></li>`).join("")}</ul>` : `<div class="empty-note">今天以步行或市内交通为主。</div>`}
+            ${day.transport.length ? `<ul class="transport-list">${day.transport.map(t => `<li class="transport-item"><span>${esc(t)}</span><button class="mini-btn copy-btn" type="button" data-copy="${esc(t)}">复制</button></li>`).join("")}</ul>` : `<div class="empty-note">今天以步行或市内交通为主。</div>`}
           </div>
           <div class="info-box">
             <div class="info-title">住宿</div>
@@ -679,15 +683,24 @@
         </div>
         <div class="info-grid">
           <div class="info-box">
-            <div class="info-title">景点</div>
+            <div class="info-title">路线时间线</div>
             <ul class="timeline">${day.places.map(p => `<li><a href="${mapUrl(p+' '+day.city)}" target="_blank" style="color:inherit">${esc(p)}</a></li>`).join("")}</ul>
           </div>
+          <div class="info-box">
+            <div class="info-title">打卡清单</div>
+            <ul class="checklist">${day.checklist.map((item, i) => renderCheckRow(`checked:d${day.day}:${i}:${slug(item)}`, item, day.city)).join("")}</ul>
+          </div>
+        </div>
+        <div class="info-grid">
           <div class="info-box">
             <div class="info-title">Tips</div>
             ${day.tips.length ? `<ul class="tips">${day.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : `<div class="empty-note">暂无额外提示。</div>`}
           </div>
+          <div class="info-box">
+            <div class="info-title">票务链接</div>
+            ${tickets}
+          </div>
         </div>
-        ${day.tickets.length ? `<div style="margin-top:14px"><div class="info-title">票务链接</div><div class="ticket-grid">${day.tickets.map(t => `<a class="link-card" target="_blank" href="${t.url}"><strong>${esc(t.label)}</strong><span class="muted">打开官方预约</span></a>`).join("")}</div></div>` : ""}
       `;
     }
 
@@ -781,12 +794,16 @@
     }
 
     function wireItinerary() {
+      async function handleCopy(e) {
+        const copy = e.target.closest(".copy-btn");
+        if (copy) { try { await navigator.clipboard.writeText(copy.dataset.copy||""); copy.textContent="已复制"; setTimeout(()=>copy.textContent="复制",1200); } catch { copy.textContent="失败"; setTimeout(()=>copy.textContent="复制",1200); } }
+      }
       $("#itineraryList").addEventListener("click", async e => {
         const header = e.target.closest(".day-header");
         if (header) { const card = header.closest(".day-card"); const open = !card.classList.contains("open"); card.classList.toggle("open", open); header.setAttribute("aria-expanded", String(open)); return; }
-        const copy = e.target.closest(".copy-btn");
-        if (copy) { try { await navigator.clipboard.writeText(copy.dataset.copy||""); copy.textContent="已复制"; setTimeout(()=>copy.textContent="复制",1200); } catch { copy.textContent="失败"; setTimeout(()=>copy.textContent="复制",1200); } }
+        handleCopy(e);
       });
+      $("#mapDetail").addEventListener("click", handleCopy);
       $("#expandAll").addEventListener("click", () => $$(".day-card").forEach(c => { c.classList.add("open"); $(".day-header",c).setAttribute("aria-expanded","true"); }));
       $("#collapseAll").addEventListener("click", () => $$(".day-card").forEach(c => { c.classList.remove("open"); $(".day-header",c).setAttribute("aria-expanded","false"); }));
       $("#resetChecks").addEventListener("click", () => { if(!confirm("确认重置所有每日打卡？"))return; Object.keys(localStorage).forEach(k=>{if(k.startsWith(key("checked:")))localStorage.removeItem(k);}); renderItinerary(); updateProgress(); });
