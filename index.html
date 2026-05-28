@@ -707,8 +707,10 @@
       $$(".map-day-btn").forEach(b => b.classList.toggle("active", Number(b.dataset.day) === dayNum));
       $$(".map-marker").forEach(el => el.classList.remove("active"));
 
+      Object.values(markers).forEach(m => m.setZIndexOffset(0));
       const marker = markers[dayNum];
       if (marker) {
+        marker.setZIndexOffset(9999);
         const el = marker.getElement();
         if (el) el.querySelector(".map-marker").classList.add("active");
         map.flyTo(marker.getLatLng(), Math.max(map.getZoom(), window.innerWidth < 768 ? 7 : 8), { duration: 0.6 });
